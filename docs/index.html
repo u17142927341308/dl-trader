@@ -1,0 +1,48 @@
+<!doctype html><meta charset="utf-8">
+<title>DL-Trader – Latest Signals</title>
+<style>
+body{font:16px system-ui;margin:2rem;max-width:900px}
+h1{margin:0 0 .25rem} small{color:#666}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:.5rem 0 1.25rem}
+.card{border:1px solid #e6e6e6;border-radius:12px;padding:12px}
+table{border-collapse:collapse;width:100%}
+th,td{border:1px solid #ddd;padding:.45rem .6rem;text-align:left}
+th{background:#f6f6f6}
+tr:nth-child(even){background:#fafafa}
+.badge{display:inline-block;padding:.12rem .5rem;border-radius:999px;border:1px solid #ccc;font-size:12px}
+.buy{background:#eaffea;border-color:#8bd38b}
+.sell{background:#ffecec;border-color:#e79c9c}
+</style>
+<h1>DL-Trader <small>(werktäglich)</small></h1>
+<div class="grid">
+  <div class="card" id="progress">Lade Fortschritt…</div>
+  <div class="card">Letztes Update: <span id="last">–</span></div>
+</div>
+<table id="t">
+  <thead><tr><th>ts</th><th>symbol</th><th>side</th><th>weight</th><th>price</th><th>stop_loss</th></tr></thead>
+  <tbody></tbody>
+</table>
+<script>
+async function main(){
+  const s = await fetch('state.json').then(r=>r.ok?r.json():{runs:0,days_remaining:60}).catch(()=>({runs:0,days_remaining:60}));
+  const d = await fetch('signals.json').then(r=>r.ok?r.json():{rows:[]}).catch(()=>({rows:[]}));
+  const p = document.getElementById('progress');
+  p.innerHTML = 'Läufe: <b>'+(s.runs||0)+'</b> &nbsp;|&nbsp; verbleibende Tage: <b>'+(s.days_remaining??'–')+'</b>';
+  const tb=document.querySelector('#t tbody');
+  const rows = (d.rows||[]).slice(-50);
+  if(rows.length){ document.getElementById('last').textContent = rows[rows.length-1].ts; }
+  rows.forEach(r=>{
+    const tr=document.createElement('tr');
+    ['ts','symbol','side','weight','price','stop_loss'].forEach(k=>{
+      const td=document.createElement('td');
+      if(k==='side'){
+        const b=document.createElement('span'); b.className='badge '+(r[k]==='BUY'?'buy':'sell'); b.textContent=r[k];
+        td.appendChild(b);
+      }else{ td.textContent = r[k]; }
+      tr.appendChild(td);
+    });
+    tb.appendChild(tr);
+  });
+}
+main();
+</script>

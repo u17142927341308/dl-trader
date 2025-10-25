@@ -1,82 +1,95 @@
-import os, csv, datetime as dt, numpy as np, torch, pandas as pd
-from torch.utils.data import DataLoader, Dataset
-from .config import SYMBOLS, START_DATE, TRAIN_START, TRAIN_END, DATA_DIR
-from .data import download_prices, build_features
-from .model import make_windows, TCNReg
+import os, csv, json, pathlib, datetime as dt
+import numpy as np
+from app.data import download_prices, build_features
+from app.dl_model import train_symbol, predict_next
 
-class WindowDS(Dataset):
-    def __init__(self,X,y): import torch as T; self.X=T.tensor(X,dtype=T.float32); self.y=T.tensor(y,dtype=T.float32)
-    def __len__(self): return len(self.X)
-    def __getitem__(self,i): return self.X[i].permute(1,0), self.y[i]
+DATA_DIR   = pathlib.Path(os.environ.get("DATA_DIR", "data"))
+MODELS_DIR = pathlib.Path("models")
+START_DATE = os.environ.get("START_DATE", "2015-01-01")
+SYMBOLS    = [s.strip() for s in os.environ.get("SYMBOLS", "SPY,QQQ").split(",") if s.strip()]
 
-def train_epoch(model, dl, opt, device):
-    model.train(); crit=torch.nn.HuberLoss(delta=1e-3); tot=n=0
-    for xb,yb in dl:
-        xb,yb=xb.to(device),yb.to(device)
-        opt.zero_grad(); pred=model(xb); loss=crit(pred,yb); loss.backward(); opt.step()
-        tot+=float(loss.item())*len(xb); n+=len(xb)
-    return tot/max(n,1)
+def _ensure_dirs():
+    DATA_DIR.mkdir(exist_ok=True)
+    MODELS_DIR.mkdir(exist_ok=True)
 
-def signal_from_pred(pred_ret, vol_fore, scale_k=1.2, cap=0.6, min_vol=1e-4):
-    vol=max(vol_fore, min_vol); x=pred_ret/(scale_k*vol)
-    w=float(np.clip(np.tanh(x), -cap, cap))
-    side="HOLD"
-    if w>=0.10: side="BUY"
-    elif w<=-0.10: side="SELL"
-    return w, side
+def _signal_from_pred(df, pred: float):
+    vol = df["ret1"].ewm(span=20).std().iloc[-1]
+    if vol is None or np.isnan(vol) or vol<=0: vol = 0.01
+    z = pred / (vol + 1e-8)
+    side = "BUY" if z>0.3 else ("SELL" if z<-0.3 else "FLAT")
+    w = float(np.tanh(z/2))
+    price = float(df["Close"].iloc[-1])
+    if side == "BUY":
+        sl = price * (1 - 2*vol)
+    elif side == "SELL":
+        sl = price * (1 + 2*vol)
+    else:
+        sl = None
+    info = {"z": float(z), "vol": float(vol), "stop_loss": (None if sl is None else float(sl))}
+    return side, w, price, info
+
+def _update_state():
+    state_path = DATA_DIR / "state.json"
+    now = dt.datetime.utcnow().replace(tzinfo=dt.timezone.utc).isoformat().replace("+00:00","Z")
+    state = {"started_at": now, "runs": 0}
+    if state_path.exists():
+        try:
+            state = json.loads(state_path.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+    if "started_at" not in state:
+        state["started_at"] = now
+    state["runs"] = int(state.get("runs", 0)) + 1
+    state["days_remaining"] = max(0, 60 - state["runs"])
+    state_path.write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8")
+    return state
 
 def run_daily():
-    os.makedirs(DATA_DIR, exist_ok=True)
-    device="cuda" if torch.cuda.is_available() else "cpu"
-    now=dt.datetime.utcnow().replace(microsecond=0).isoformat()+"Z"
-    rows=[]; errors=[]
+    _ensure_dirs()
+    rows, errors = [], []
+
     for sym in SYMBOLS:
         try:
-            df_raw=download_prices(sym, START_DATE)
-            if df_raw is None or len(df_raw)==0:
-                errors.append(f"{sym}: no data")
-                continue
-            df,feats=build_features(df_raw)
-            idx=df.index
-            if not (idx.min()<=pd.Timestamp(TRAIN_START) and idx.max()>=pd.Timestamp(TRAIN_END)):
-                errors.append(f"{sym}: insufficient history ({idx.min().date()}..{idx.max().date()})")
-                continue
-            train_mask=(idx>=pd.Timestamp(TRAIN_START))&(idx<pd.Timestamp(TRAIN_END))
-            test_mask=(idx>=pd.Timestamp(TRAIN_END))
-            train_idx=np.where(train_mask)[0]; test_idx=np.where(test_mask)[0]
-            if len(train_idx)==0 or len(test_idx)==0:
-                errors.append(f"{sym}: empty split")
-                continue
-            train_start,train_end=train_idx[0],train_idx[-1]
-            test_start=test_idx[0]
-            Xtr,Ytr=make_windows(df,feats,"y_ret",win=64,start=train_start,end=train_end)
-            Xte,Yte=make_windows(df,feats,"y_ret",win=64,start=test_start,end=len(df)-1)
-            if len(Xtr)==0 or len(Xte)==0:
-                errors.append(f"{sym}: no windows")
-                continue
-            dl=DataLoader(WindowDS(Xtr,Ytr),batch_size=256,shuffle=True,drop_last=True)
-            model=TCNReg(in_feats=len(feats)).to(device); opt=torch.optim.AdamW(model.parameters(),lr=1e-3,weight_decay=5e-4)
-            for _ in range(8): _=train_epoch(model,dl,opt,device)
-            import torch as T
-            xb=T.tensor(Xte[-1:],dtype=T.float32).permute(0,2,1).to(device)
-            with T.no_grad(): pred=float(model(xb).cpu().numpy().ravel()[0])
-            vol_all=df["ret1"].ewm(span=20).std().shift(1).bfill().values
-            idx0=test_start+64; vol_fore=float(vol_all[idx0+len(Xte)-1])
-            w,side=signal_from_pred(pred,vol_fore,1.2,0.6)
-            price=float(df["Close"].iloc[-1]); rows.append([now,sym,side,w,price])
+            df_raw = download_prices(sym, START_DATE)
+            feats_df, feats = build_features(df_raw)
+            if feats_df is None or len(feats_df) < 100:
+                raise ValueError("not enough data")
+
+            model, meta = train_symbol(feats_df, feats, MODELS_DIR, sym, window=64, epochs=6)
+            if model is None:
+                raise ValueError("no training data")
+
+            pred = predict_next(feats_df, feats, MODELS_DIR, sym, meta)
+            if pred is None or np.isnan(pred):
+                raise ValueError("no prediction")
+
+            side, w, price, extra = _signal_from_pred(feats_df, pred)
+            now = dt.datetime.utcnow().replace(tzinfo=dt.timezone.utc).isoformat().replace("+00:00","Z")
+            rows.append([now, sym, side, w, price, extra.get("stop_loss")])
         except Exception as e:
             errors.append(f"{sym}: {type(e).__name__}: {e}")
-    sig_path=os.path.join(DATA_DIR,"signals.csv")
-    write_header=not os.path.exists(sig_path)
+
+    sig_path = DATA_DIR / "signals.csv"
+    write_header = not sig_path.exists()
     if rows:
-        with open(sig_path,"a",newline="") as f:
-            wr=csv.writer(f)
-            if write_header: wr.writerow(["ts","symbol","side","weight","price"])
+        with sig_path.open("a", newline="") as f:
+            wr = csv.writer(f)
+            if write_header:
+                wr.writerow(["ts","symbol","side","weight","price","stop_loss"])
             wr.writerows(rows)
-    err_path=os.path.join(DATA_DIR,"last_errors.log")
-    if errors:
-        with open(err_path,"w") as f:
-            for line in errors: f.write(line+"\n")
-    else:
-        if os.path.exists(err_path): os.remove(err_path)
+
+    state = _update_state()
+
+    # Für Dashboard (GitHub Pages)
+    docs = pathlib.Path("docs")
+    docs.mkdir(exist_ok=True)
+    (docs / "signals.json").write_text(
+        json.dumps({"rows":[
+            {"ts":r[0],"symbol":r[1],"side":r[2],"weight":r[3],"price":r[4],"stop_loss":r[5]}
+            for r in rows
+        ]}, ensure_ascii=False, indent=2),
+        encoding="utf-8"
+    )
+    (docs / "state.json").write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8")
+
     return rows, errors
