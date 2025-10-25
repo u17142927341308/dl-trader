@@ -55,7 +55,7 @@ def run_daily():
             if feats_df is None or len(feats_df) < 100:
                 raise ValueError("not enough data")
 
-            model, meta = train_symbol(feats_df, feats, MODELS_DIR, sym, window=64, epochs=6)
+            model, meta = train_symbol(feats_df, feats, MODELS_DIR, sym, window=96, epochs=6)
             if model is None:
                 raise ValueError("no training data")
 
