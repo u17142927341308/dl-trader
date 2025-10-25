@@ -1,0 +1,43 @@
+name: daily-train
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 17 * * 1-5"  # UTC (Mo–Fr)
+
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r app/requirements.txt
+          pip install torch==2.3.1 --index-url https://download.pytorch.org/whl/cpu
+
+      - name: Ensure data dirs
+        run: |
+          mkdir -p data data/models
+
+      - name: Run daily training
+        run: |
+          python - <<'PY'
+          import json
+          from app.tasks_inline import run_daily
+          rows, errs = run_daily()
+          print(json.dumps({"written": len(rows), "errors": errs}))
+          PY
+
+      - name: Commit updates
+        run: |
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git add -A
+          git diff --cached --quiet || git commit -m "daily-train: data update [skip ci]"
+          git push
