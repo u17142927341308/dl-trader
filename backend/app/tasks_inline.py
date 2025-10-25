@@ -16,7 +16,7 @@ def _signal_from_pred(df, pred: float):
     vol = df["ret1"].ewm(span=20).std().iloc[-1]
     if vol is None or np.isnan(vol) or vol<=0: vol = 0.01
     z = pred / (vol + 1e-8)
-    side = "BUY" if z>0.3 else ("SELL" if z<-0.3 else "FLAT")
+    side = "BUY" if z>0.5 else ("SELL" if z<-0.5 else "FLAT")
     w = float(np.tanh(z/2))
     price = float(df["Close"].iloc[-1])
     if side == "BUY":
