@@ -105,3 +105,14 @@ def download_prices(symbol: str, start: str) -> pd.DataFrame:
         if df is not None and not df.empty:
             return df
     return pd.DataFrame()
+
+def build_features(df: pd.DataFrame):
+    from .indicators import add_indicators
+    import pandas as pd
+    if df is None or df.empty:
+        return pd.DataFrame(), []
+    out = add_indicators(df.copy())
+    out["y_ret"] = out["Close"].pct_change().shift(-1)
+    feats = ["ret1","vol_20","mom_10","mom_20","ema_spread","price_z_20","rsi_14","macd","macd_signal","macd_hist","atr_14"]
+    out = out[["Open","High","Low","Close","Volume"] + feats + ["y_ret"]].dropna().copy()
+    return out.dropna().copy(), feats
