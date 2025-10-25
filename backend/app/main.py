@@ -48,3 +48,17 @@ def last_errors():
     if not os.path.exists(p):
         return {"errors": []}
     return {"errors": pathlib.Path(p).read_text(encoding="utf-8").splitlines()}
+
+try:
+    from .dl import train_daily
+    @app.post("/train_daily")
+    def train_daily_endpoint():
+        try:
+            info = train_daily()
+            ok = (len(info.get("errors", [])) == 0)
+            return {"ok": ok, **info}
+        except Exception as e:
+            msg = f"{type(e).__name__}: {e}"
+            return {"ok": False, "errors": [msg]}
+except Exception:
+    pass

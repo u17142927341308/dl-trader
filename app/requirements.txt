@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+pandas
+numpy
+yfinance
+requests
+torch==2.3.1
