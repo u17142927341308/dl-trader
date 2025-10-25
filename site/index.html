@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DL Trader – Signale & 60-Tage-Kampagne</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>DL Trader</h1>
+  <div id="status"></div>
+  <button id="refresh">Neu laden</button>
+</header>
+
+<section id="campaign">
+  <h2>60-Tage Kampagne</h2>
+  <div class="progress"><div id="bar"></div></div>
+  <div class="stats">
+    <div><span id="elapsed">0</span> Tage vergangen</div>
+    <div><span id="remain">60</span> Tage übrig</div>
+    <div>Start: <span id="start">—</span></div>
+  </div>
+</section>
+
+<section>
+  <h2>Aktuelle Signale</h2>
+  <div id="cards" class="cards"></div>
+</section>
+
+<section>
+  <details>
+    <summary>Letzte 12 Signale</summary>
+    <table id="tail">
+      <thead><tr><th>Zeit</th><th>Symbol</th><th>Side</th><th>Gewicht</th><th>Preis</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </details>
+</section>
+
+<footer>
+  <small>Automatisch täglich aktualisiert über GitHub Actions.</small>
+</footer>
+
+<script>
+async function loadJSON(p){ const r=await fetch(p,{cache:"no-store"}); if(!r.ok) throw new Error(p); return r.json(); }
+function parseTs(s){ if(!s) return null; try{ return new Date(s.replace('Z','+00:00')); }catch(e){ return null; } }
+
+async function render(){
+  const status = document.getElementById('status');
+  try{
+    const signals = await loadJSON('data/signals.json').catch(()=>({rows:[]}));
+    const rows = (signals && signals.rows) ? signals.rows : [];
+
+    // Kampagnen-Progress
+    let dates = rows.map(r=>parseTs(r.ts)).filter(Boolean);
+    let start = dates.length ? new Date(Math.min(...dates)) : null;
+    let today = new Date();
+    let elapsed = start ? Math.floor((today - start)/(1000*60*60*24)) + 1 : 0;
+    let total = 60;
+    let remain = Math.max(0, total - elapsed);
+    let pct = Math.min(1, elapsed/total);
+
+    document.getElementById('elapsed').textContent = elapsed;
+    document.getElementById('remain').textContent = remain;
+    document.getElementById('start').textContent = start ? start.toISOString().slice(0,10) : '—';
+    document.getElementById('bar').style.width = (pct*100).toFixed(1) + '%';
+
+    // Letztes Signal je Symbol
+    const latest = {};
+    for(const r of rows){
+      const t = parseTs(r.ts) || new Date(0);
+      const sym = r.symbol || '';
+      if(!sym) continue;
+      if(!latest[sym] || t > latest[sym]._t){ latest[sym] = {...r, _t:t}; }
+    }
+    const cards = document.getElementById('cards'); cards.innerHTML='';
+    const order = Object.keys(latest).sort();
+    for(const sym of order){
+      const r = latest[sym];
+      const side = String(r.side||'').toUpperCase();
+      const badge = side==='BUY' ? '🟢 BUY' : (side==='SELL' ? '🔴 SELL' : '⚪ HOLD');
+      const w = Number(r.weight||0).toFixed(2);
+      const p = r.price!=null && r.price!=='' ? Number(r.price).toFixed(2) : '—';
+      const ts = r.ts || '—';
+      const div = document.createElement('div');
+      div.className='card';
+      div.innerHTML = '<h3>'+sym+'</h3>'
+        + '<div class="side">'+badge+'</div>'
+        + '<div>Gewicht: <b>'+w+'</b></div>'
+        + '<div>Preis: '+p+'</div>'
+        + '<div class="ts">'+ts+'</div>';
+      cards.appendChild(div);
+    }
+
+    // Tabelle letzte 12
+    const tb = document.querySelector('#tail tbody'); tb.innerHTML='';
+    const tail = rows.slice(-12);
+    for(const r of tail){
+      const tr = document.createElement('tr');
+      tr.innerHTML = '<td>'+ (r.ts||'') +'</td>'
+        + '<td>'+ (r.symbol||'') +'</td>'
+        + '<td>'+ (r.side||'') +'</td>'
+        + '<td>'+ (Number(r.weight||0).toFixed(2)) +'</td>'
+        + '<td>'+ (r.price!=null&&r.price!==''?Number(r.price).toFixed(2):'') +'</td>';
+      tb.appendChild(tr);
+    }
+    status.textContent='✅ Daten geladen';
+  }catch(e){
+    status.textContent='⚠️ Konnte Daten nicht laden';
+  }
+}
+document.getElementById('refresh').onclick = render;
+render();
+</script>
+</body>
+</html>
