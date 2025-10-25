@@ -1,0 +1,10 @@
+services:
+  scheduler:
+    build:
+      context: ./scheduler
+    container_name: dl-trader-scheduler-1
+    environment:
+      - TZ=${TZ}
+    depends_on:
+      - api
+    restart: unless-stopped

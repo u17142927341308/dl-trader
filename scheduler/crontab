@@ -1,0 +1,2 @@
+50 17 * * 1-5 curl -sf -X POST http://api:8000/train_daily >> /var/log/cron.log 2>&1
+5 18 * * 1-5 curl -sf -X POST http://api:8000/run_daily_dl >> /var/log/cron.log 2>&1

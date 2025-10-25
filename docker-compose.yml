@@ -1,0 +1,37 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    environment:
+      - DATA_DIR=/data
+      - START_DATE=${START_DATE}
+      - SYMBOLS=${SYMBOLS}
+      - LEARNING_DAYS=${LEARNING_DAYS}
+      - MARKET_TZ=${MARKET_TZ}
+      - RUN_AT=${RUN_AT}
+      - POLYGON_API_KEY=${POLYGON_API_KEY}
+    volumes:
+      - ./data:/data
+    ports:
+      - "8000:8000"
+
+  ui:
+    build:
+      context: .
+      dockerfile: ui/Dockerfile
+    environment:
+      - API_URL=http://api:8000
+    ports:
+      - "8501:8501"
+    depends_on:
+      - api
+
+  scheduler:
+    build:
+      context: ./scheduler
+    environment:
+      - TZ=${MARKET_TZ}
+    depends_on:
+      - api
+    restart: unless-stopped
