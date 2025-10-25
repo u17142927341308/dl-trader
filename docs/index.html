@@ -1,61 +1,45 @@
 <!doctype html>
-<html lang="en">
+<html lang="de">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>DL Trader — Daily Signals</title>
-<style>
- body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Helvetica,Arial,sans-serif;margin:20px;line-height:1.4}
- h1{margin:0 0 10px}
- .row{display:flex;flex-wrap:wrap;gap:12px}
- .card{border:1px solid #eee;border-radius:12px;padding:12px;box-shadow:0 1px 3px rgba(0,0,0,0.06);min-width:240px}
- .badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px}
- .buy{background:#e6ffed;border:1px solid #34d058;color:#1a7f37}
- .sell{background:#ffebe9;border:1px solid #d73a49;color:#86181d}
- .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
- .muted{color:#666;font-size:13px}
- img{max-width:100%}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>DL Trader – Live</title>
+  <link rel="stylesheet" href="assets/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-<h1>DL Trader — Daily Signals</h1>
-<p class="muted">Auto-updated by GitHub Actions. Latest 10 signals below, plus equity curve & metrics.</p>
+  <header class="topbar">
+    <h1>DL Trader</h1>
+    <div id="meta"></div>
+  </header>
 
-<div class="grid">
-  <div>
-    <h3>Latest Signals</h3>
-    <div id="signals" class="row"></div>
-  </div>
-  <div>
-    <h3>Equity</h3>
-    <img src="./backtest.png" alt="Equity Curve" />
-    <pre id="metrics" class="muted"></pre>
-  </div>
-</div>
+  <main class="grid">
+    <section class="panel">
+      <h2>Letzte Signale</h2>
+      <div id="signals" class="cards"></div>
+    </section>
 
-<script>
-async function loadJSON(path){ try{ const r=await fetch(path, {cache:'no-store'}); if(!r.ok) return null; return await r.json(); }catch(e){ return null; } }
-function badge(side){ const s=String(side||'').toUpperCase(); const cls = (s==='BUY'?'buy':'sell'); return `<span class="badge ${cls}">${s}</span>`; }
+    <section class="panel">
+      <h2>Training – 60-Tage-Fortschritt</h2>
+      <canvas id="trainChart"></canvas>
+    </section>
 
-(async ()=>{
-  const sig = await loadJSON('./signals.json') || [];
-  const box = document.getElementById('signals');
-  box.innerHTML = '';
-  sig.slice(-10).reverse().forEach(r=>{
-    const ts = (r.ts||'').replace('T',' ').replace('Z',' UTC');
-    const html = `
-      <div class="card">
-        <div><strong>${r.symbol}</strong> ${badge(r.side)}</div>
-        <div class="muted">${ts}</div>
-        <div>Weight: <strong>${Number(r.weight).toFixed(2)}</strong></div>
-        <div>Ref. Price: ${Number(r.price).toFixed(2)}</div>
-      </div>`;
-    box.insertAdjacentHTML('beforeend', html);
-  });
+    <section class="panel">
+      <h2>Per-Symbol Verlauf</h2>
+      <div class="controls">
+        <label>Symbol:
+          <select id="symbolSelect"></select>
+        </label>
+      </div>
+      <canvas id="symbolChart"></canvas>
+    </section>
+  </main>
 
-  const m = await loadJSON('./metrics.json');
-  document.getElementById('metrics').textContent = m ? JSON.stringify(m, null, 2) : 'no metrics yet';
-})();
-</script>
+  <footer class="foot">
+    <span>© DL Trader</span>
+    <span id="nextRun"></span>
+  </footer>
+
+  <script src="assets/app.js"></script>
 </body>
 </html>
