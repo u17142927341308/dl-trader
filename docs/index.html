@@ -1,48 +1,61 @@
-<!doctype html><meta charset="utf-8">
-<title>DL-Trader – Latest Signals</title>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>DL Trader — Daily Signals</title>
 <style>
-body{font:16px system-ui;margin:2rem;max-width:900px}
-h1{margin:0 0 .25rem} small{color:#666}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:.5rem 0 1.25rem}
-.card{border:1px solid #e6e6e6;border-radius:12px;padding:12px}
-table{border-collapse:collapse;width:100%}
-th,td{border:1px solid #ddd;padding:.45rem .6rem;text-align:left}
-th{background:#f6f6f6}
-tr:nth-child(even){background:#fafafa}
-.badge{display:inline-block;padding:.12rem .5rem;border-radius:999px;border:1px solid #ccc;font-size:12px}
-.buy{background:#eaffea;border-color:#8bd38b}
-.sell{background:#ffecec;border-color:#e79c9c}
+ body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Helvetica,Arial,sans-serif;margin:20px;line-height:1.4}
+ h1{margin:0 0 10px}
+ .row{display:flex;flex-wrap:wrap;gap:12px}
+ .card{border:1px solid #eee;border-radius:12px;padding:12px;box-shadow:0 1px 3px rgba(0,0,0,0.06);min-width:240px}
+ .badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px}
+ .buy{background:#e6ffed;border:1px solid #34d058;color:#1a7f37}
+ .sell{background:#ffebe9;border:1px solid #d73a49;color:#86181d}
+ .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+ .muted{color:#666;font-size:13px}
+ img{max-width:100%}
 </style>
-<h1>DL-Trader <small>(werktäglich)</small></h1>
+</head>
+<body>
+<h1>DL Trader — Daily Signals</h1>
+<p class="muted">Auto-updated by GitHub Actions. Latest 10 signals below, plus equity curve & metrics.</p>
+
 <div class="grid">
-  <div class="card" id="progress">Lade Fortschritt…</div>
-  <div class="card">Letztes Update: <span id="last">–</span></div>
+  <div>
+    <h3>Latest Signals</h3>
+    <div id="signals" class="row"></div>
+  </div>
+  <div>
+    <h3>Equity</h3>
+    <img src="./backtest.png" alt="Equity Curve" />
+    <pre id="metrics" class="muted"></pre>
+  </div>
 </div>
-<table id="t">
-  <thead><tr><th>ts</th><th>symbol</th><th>side</th><th>weight</th><th>price</th><th>stop_loss</th></tr></thead>
-  <tbody></tbody>
-</table>
+
 <script>
-async function main(){
-  const s = await fetch('state.json').then(r=>r.ok?r.json():{runs:0,days_remaining:60}).catch(()=>({runs:0,days_remaining:60}));
-  const d = await fetch('signals.json').then(r=>r.ok?r.json():{rows:[]}).catch(()=>({rows:[]}));
-  const p = document.getElementById('progress');
-  p.innerHTML = 'Läufe: <b>'+(s.runs||0)+'</b> &nbsp;|&nbsp; verbleibende Tage: <b>'+(s.days_remaining??'–')+'</b>';
-  const tb=document.querySelector('#t tbody');
-  const rows = (d.rows||[]).slice(-50);
-  if(rows.length){ document.getElementById('last').textContent = rows[rows.length-1].ts; }
-  rows.forEach(r=>{
-    const tr=document.createElement('tr');
-    ['ts','symbol','side','weight','price','stop_loss'].forEach(k=>{
-      const td=document.createElement('td');
-      if(k==='side'){
-        const b=document.createElement('span'); b.className='badge '+(r[k]==='BUY'?'buy':'sell'); b.textContent=r[k];
-        td.appendChild(b);
-      }else{ td.textContent = r[k]; }
-      tr.appendChild(td);
-    });
-    tb.appendChild(tr);
+async function loadJSON(path){ try{ const r=await fetch(path, {cache:'no-store'}); if(!r.ok) return null; return await r.json(); }catch(e){ return null; } }
+function badge(side){ const s=String(side||'').toUpperCase(); const cls = (s==='BUY'?'buy':'sell'); return `<span class="badge ${cls}">${s}</span>`; }
+
+(async ()=>{
+  const sig = await loadJSON('./signals.json') || [];
+  const box = document.getElementById('signals');
+  box.innerHTML = '';
+  sig.slice(-10).reverse().forEach(r=>{
+    const ts = (r.ts||'').replace('T',' ').replace('Z',' UTC');
+    const html = `
+      <div class="card">
+        <div><strong>${r.symbol}</strong> ${badge(r.side)}</div>
+        <div class="muted">${ts}</div>
+        <div>Weight: <strong>${Number(r.weight).toFixed(2)}</strong></div>
+        <div>Ref. Price: ${Number(r.price).toFixed(2)}</div>
+      </div>`;
+    box.insertAdjacentHTML('beforeend', html);
   });
-}
-main();
+
+  const m = await loadJSON('./metrics.json');
+  document.getElementById('metrics').textContent = m ? JSON.stringify(m, null, 2) : 'no metrics yet';
+})();
 </script>
+</body>
+</html>
