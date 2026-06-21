@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>gold-bot — Gold Futures Signal Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">⬤</span>
+      <span class="brand-name">gold-bot</span>
+      <span class="brand-sub">GC / MGC · Tradovate 50K funded</span>
+    </div>
+    <div class="status-strip" id="status-strip">
+      <div class="stat"><span class="stat-label">Search</span><span class="stat-value" id="search-state">—</span></div>
+      <div class="stat"><span class="stat-label">DD headroom</span><span class="stat-value" id="dd-headroom">—</span></div>
+      <div class="stat"><span class="stat-label">Daily loss</span><span class="stat-value" id="daily-state">—</span></div>
+      <div class="stat"><span class="stat-label">Data as of</span><span class="stat-value" id="data-asof">—</span></div>
+    </div>
+  </header>
+
+  <main id="main" class="grid">
+    <!-- Current signal -->
+    <section class="panel panel-signal" aria-labelledby="h-signal">
+      <h2 id="h-signal">Current signal</h2>
+      <div id="signal-body" class="empty">No accepted strategy yet — search ongoing.</div>
+      <p class="disclaimer">⚠️ Advisory only. This dashboard <strong>displays</strong> signals; it does <strong>not</strong> place orders.</p>
+    </section>
+
+    <!-- Active strategy -->
+    <section class="panel" aria-labelledby="h-strategy">
+      <h2 id="h-strategy">Active strategy</h2>
+      <div id="strategy-body" class="empty">No strategy is live. Nothing passed the acceptance gate.</div>
+    </section>
+
+    <!-- Equity curve -->
+    <section class="panel panel-wide" aria-labelledby="h-equity">
+      <h2 id="h-equity">Equity curve <span class="hint">(with trailing-DD floor)</span></h2>
+      <div class="chart-wrap"><canvas id="equity-chart"></canvas></div>
+      <div id="equity-empty" class="empty">No equity curve yet.</div>
+    </section>
+
+    <!-- Metrics -->
+    <section class="panel" aria-labelledby="h-metrics">
+      <h2 id="h-metrics">Metrics <span class="hint">(OOS vs holdout)</span></h2>
+      <div id="metrics-body" class="empty">No metrics yet.</div>
+    </section>
+
+    <!-- Walk-forward / trial ledger -->
+    <section class="panel" aria-labelledby="h-wfo">
+      <h2 id="h-wfo">Walk-forward & trial ledger</h2>
+      <div id="wfo-body" class="empty">No search has run yet.</div>
+    </section>
+
+    <!-- Trade log -->
+    <section class="panel panel-wide" aria-labelledby="h-trades">
+      <h2 id="h-trades">Trade log</h2>
+      <div id="trades-body" class="empty">No trades to show.</div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <div class="disclaimers">
+      <p>⚠️ Trading futures is leveraged and can lose more than deposited.
+         ⚠️ Backtests and walk-forward results do not guarantee future performance.
+         ⚠️ Validate on a Tradovate paper/sim account before risking a funded account.</p>
+    </div>
+    <div class="foot-meta"><span id="last-run">—</span> · <span>static dashboard · data from GitHub Actions</span></div>
+  </footer>
+</body>
+</html>
