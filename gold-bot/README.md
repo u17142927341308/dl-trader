@@ -79,12 +79,27 @@ typed, tested, and committed before moving on.
 - [x] **Phase 2 — Strategy ABC + families (ema_cross, rsi_bollinger, donchian_breakout, macd_trend) + registry**
 - [x] **Phase 3 — Event-driven engine (trailing-DD, daily-loss, costs) + fast runner; reconciled**
 - [x] **Phase 4 — Metrics suite (Deflated Sharpe, Monte Carlo) with hand-checked tests**
-- [ ] Phase 5 — Walk-forward + optimizer + gating + orchestrator
+- [x] **Phase 5 — Walk-forward + optimizer + gating + orchestrator (the disciplined search)**
 - [ ] Phase 6 — Risk manager wired into backtest + signal paths
-- [ ] Phase 7 — Signal generator + JSON exporters + schema
-- [~] Phase 8 — Dashboard front-end (shell live on Pages; rich views pending)
+- [x] **Phase 7 — Signal generator + JSON exporters + pydantic schema**
+- [~] Phase 8 — Dashboard front-end (live, fed by real artifacts; rich trade-log/plateau pending)
 - [~] Phase 9 — GitHub Actions + Pages deployment (Pages wired; compute workflows pending)
 - [ ] Phase 10 — Docs, final test pass, "extend to live Tradovate" note
+
+### See the dashboard now
+
+```bash
+cd gold-bot
+pip install -r requirements.txt
+# Real GC=F data (needs network); falls back to a labelled synthetic dataset:
+PYTHONPATH=src:. python -m gold_bot.run_research --out docs/data
+# then open docs/index.html (or serve it):
+python -m http.server -d docs 8000   # -> http://localhost:8000
+```
+
+The dashboard reads the freshly generated `docs/data/*.json`. If no strategy
+passes the gate, it honestly shows the **best candidate found and why it was
+rejected** rather than shipping an overfit curve.
 
 ## What Phase 1 delivers
 
@@ -109,15 +124,27 @@ gold-bot/
 │   │   └── registry.py         # auto-register families + search-space expansion
 │   ├── risk/
 │   │   └── prop_rules.py       # TrailingDrawdown + DailyLossLimit (path-dependent)
-│   └── backtest/
-│       ├── event_engine.py     # bar-by-bar verifier: prop rules + costs + stops
-│       ├── vectorbt_runner.py  # fast vectorised pass for the search (reconciled)
-│       └── metrics.py          # full suite + Deflated Sharpe + Monte-Carlo bust
-├── docs/                       # gold-bot dashboard (GitHub Pages root)
-└── tests/                      # 73 tests: no-look-ahead (indicators + signals),
+│   ├── backtest/
+│   │   ├── event_engine.py     # bar-by-bar verifier: prop rules + costs + stops
+│   │   ├── vectorbt_runner.py  # fast vectorised pass for the search (reconciled)
+│   │   └── metrics.py          # full suite + Deflated Sharpe + Monte-Carlo bust
+│   ├── search/
+│   │   ├── walk_forward.py     # rolling/anchored WFO splitter + candidate eval
+│   │   ├── optimizer.py        # grid over the space, scored on OOS, every trial logged
+│   │   ├── gating.py           # acceptance gate (Sharpe/PF/DSR/MC/DD/daily-loss)
+│   │   └── orchestrator.py     # search -> gate -> holdout-once loop
+│   ├── signals/
+│   │   ├── schema.py           # pydantic models shared by back-end + front-end
+│   │   └── generator.py        # accepted strategy + latest bars -> advisory signal
+│   ├── reporting/
+│   │   └── export.py           # write validated docs/data/*.json
+│   └── run_research.py         # data -> search -> gate -> export entry point
+├── docs/                       # gold-bot dashboard (GitHub Pages root) + data/*.json
+└── tests/                      # 79 tests: no-look-ahead (indicators + signals),
                                 # cache integrity, config, registry/grids, prop-rule
                                 # edge cases, engine breaches, event/fast reconcile,
-                                # and every metric vs a hand-computed fixture
+                                # every metric vs a hand-computed fixture, WFO windows,
+                                # gating logic, search smoke + JSON-schema validation
 ```
 
 **Design highlights**
