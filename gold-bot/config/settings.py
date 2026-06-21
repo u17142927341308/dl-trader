@@ -99,9 +99,14 @@ class Settings(BaseSettings):
     commission_per_side: float = 0.74
     slippage_ticks: float = 1.0
 
-    # Data history start (longest reliable GC history is what we want).
+    # Data history start (longest reliable history is what we want).
     history_start: str = "2007-01-01"
     data_cache_dir: str = ".cache"
+
+    # Alpha Vantage (gold proxy via the GLD ETF). Key from env only; never commit.
+    alphavantage_api_key: str = ""
+    gold_proxy_symbol: str = "GLD"
+    gold_proxy_scale: float = 10.0
 
     # Reproducibility.
     random_seed: int = 7

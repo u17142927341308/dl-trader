@@ -35,7 +35,8 @@ function setText(id, txt) {
 
 function renderStatus(status) {
   if (!status) return;
-  setText("search-state", status.search_state || "—");
+  const synthetic = status.data_source === "synthetic";
+  setText("search-state", (status.search_state || "—") + (synthetic ? " · ⚠️ SYNTHETIC DEMO" : ""));
   setText("dd-headroom", fmtMoney(status.account_headroom_to_trailing_dd));
   setText("daily-state", status.daily_loss_state || "—");
   setText("data-asof", fmtTime(status.data_as_of));

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-21T20:27:37.335932Z",
+  "generated_at": "2026-06-21T20:50:15.537298Z",
   "instrument": "MGC",
   "timeframe": "1d",
   "signal": "FLAT",
@@ -9,7 +9,7 @@
   "position_size_contracts": 0,
   "risk_dollars": null,
   "account_headroom_to_trailing_dd": 2000.0,
-  "confidence_notes": "No accepted strategy on file.",
+  "confidence_notes": "No accepted strategy \u2014 search ongoing or none found.",
   "strategy_id": null,
   "valid_until": null,
   "auto_execution": false

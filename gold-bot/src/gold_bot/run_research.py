@@ -46,32 +46,56 @@ def synthetic_gold(n: int = 3000, seed: int = 7) -> pd.DataFrame:
     return df
 
 
-def load_data(source: str) -> tuple[pd.DataFrame, bool]:
-    """Return (frame, is_synthetic)."""
+def _from_alphavantage(s) -> pd.DataFrame:
+    from .data.alphavantage_adapter import AlphaVantageAdapter
+
+    adapter = AlphaVantageAdapter(api_key=s.alphavantage_api_key, scale=s.gold_proxy_scale)
+    return adapter.fetch(s.gold_proxy_symbol, "1d", start=s.history_start)
+
+
+def _from_yfinance(s) -> pd.DataFrame:
+    return YFinanceAdapter().fetch(s.instrument.yahoo_symbol, "1d", start=s.history_start)
+
+
+def load_data(source: str) -> tuple[pd.DataFrame, str]:
+    """Return (frame, source_label). 'auto' tries Alpha Vantage -> yfinance -> synthetic."""
     s = get_settings()
     if source == "synthetic":
-        return synthetic_gold(), True
-    try:
-        adapter = YFinanceAdapter()
-        df = adapter.fetch(s.instrument.yahoo_symbol, "1d", start=s.history_start)
-        if len(df) < 1200:
-            print(f"yfinance returned only {len(df)} bars; falling back to synthetic", file=sys.stderr)
-            return synthetic_gold(), True
-        return df, False
-    except Exception as exc:  # noqa: BLE001
-        print(f"data fetch failed ({exc}); falling back to synthetic", file=sys.stderr)
-        return synthetic_gold(), True
+        return synthetic_gold(), "synthetic"
+
+    order: list[str]
+    if source == "auto":
+        order = (["alphavantage"] if s.alphavantage_api_key else []) + ["yfinance"]
+    else:
+        order = [source]
+
+    for src in order:
+        try:
+            df = _from_alphavantage(s) if src == "alphavantage" else _from_yfinance(s)
+            if len(df) < 1200:
+                print(f"{src} returned only {len(df)} bars; trying next source", file=sys.stderr)
+                continue
+            label = f"{src}:{s.gold_proxy_symbol}x{s.gold_proxy_scale:g}" if src == "alphavantage" else src
+            return df, label
+        except Exception as exc:  # noqa: BLE001
+            print(f"{src} fetch failed ({exc}); trying next source", file=sys.stderr)
+
+    print("all real sources failed; falling back to synthetic", file=sys.stderr)
+    return synthetic_gold(), "synthetic"
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="gold-bot research pipeline")
-    parser.add_argument("--source", choices=["yfinance", "synthetic"], default="yfinance")
+    parser.add_argument(
+        "--source", choices=["auto", "alphavantage", "yfinance", "synthetic"], default="auto"
+    )
     parser.add_argument("--out", default="docs/data")
     parser.add_argument("--max-trials", type=int, default=200)
     args = parser.parse_args(argv)
 
-    df, synthetic = load_data(args.source)
-    print(f"data: {len(df)} bars {df.index[0].date()} -> {df.index[-1].date()} (synthetic={synthetic})")
+    df, source_label = load_data(args.source)
+    synthetic = source_label == "synthetic"
+    print(f"data: {len(df)} bars {df.index[0].date()} -> {df.index[-1].date()} (source={source_label})")
 
     outcome = run_search(df, wfo_cfg=WFOConfig(), max_trials_per_family=args.max_trials)
     print(
@@ -83,14 +107,14 @@ def main(argv: list[str] | None = None) -> int:
 
     written = export_all(outcome, df, args.out, timeframe="1d")
 
-    # If running synthetic, annotate status.json so it is never mistaken for real.
-    if synthetic:
-        status_path = written.get("status.json")
-        if status_path:
-            data = json.loads(status_path.read_text())
+    # Record the data source in status.json; flag synthetic loudly.
+    status_path = written.get("status.json")
+    if status_path:
+        data = json.loads(status_path.read_text())
+        data["data_source"] = source_label
+        if synthetic:
             data["note"] = (data.get("note", "") + " [SYNTHETIC DEMO DATA]").strip()
-            data["data_source"] = "synthetic"
-            status_path.write_text(json.dumps(data, indent=2))
+        status_path.write_text(json.dumps(data, indent=2))
 
     print(f"wrote {len(written)} artifacts to {args.out}")
     return 0
