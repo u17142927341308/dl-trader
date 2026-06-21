@@ -1,82 +1,50 @@
 {
-  "total_trials": 56,
-  "deflated_sharpe": 0.7383,
-  "walk_forward_efficiency": 0.2387,
+  "total_trials": 66,
+  "deflated_sharpe": 0.0879,
+  "walk_forward_efficiency": 2.4644,
   "folds": [
     {
       "family": "ema_cross",
-      "oos_sharpe": 0.168,
-      "oos_profit_factor": 1.197,
-      "n_trades": 52
+      "oos_sharpe": -4.31,
+      "oos_profit_factor": 0.659,
+      "n_trades": 129
     },
     {
       "family": "rsi_bollinger",
-      "oos_sharpe": 0.268,
-      "oos_profit_factor": 1.281,
-      "n_trades": 26
+      "oos_sharpe": 5.435,
+      "oos_profit_factor": 1.498,
+      "n_trades": 74
     },
     {
       "family": "donchian_breakout",
-      "oos_sharpe": 0.16,
-      "oos_profit_factor": 1.196,
-      "n_trades": 38
+      "oos_sharpe": -6.418,
+      "oos_profit_factor": 0.606,
+      "n_trades": 123
     },
     {
       "family": "macd_trend",
-      "oos_sharpe": 0.607,
-      "oos_profit_factor": 1.626,
-      "n_trades": 87
+      "oos_sharpe": -7.414,
+      "oos_profit_factor": 0.58,
+      "n_trades": 175
     }
   ],
   "top_trials": [
     {
-      "family": "macd_trend",
-      "params": {
-        "fast": 12,
-        "slow": 26,
-        "signal": 9,
-        "regime_ma": 100,
-        "atr_stop_mult": 2.0
-      },
-      "oos_sharpe": 0.607,
-      "oos_profit_factor": 1.626,
-      "oos_return_pct": 0.0633,
-      "n_trades": 87,
-      "dd_breached": false,
-      "score": 0.607
-    },
-    {
-      "family": "macd_trend",
-      "params": {
-        "fast": 12,
-        "slow": 26,
-        "signal": 9,
-        "regime_ma": 100,
-        "atr_stop_mult": 3.0
-      },
-      "oos_sharpe": 0.596,
-      "oos_profit_factor": 1.609,
-      "oos_return_pct": 0.062,
-      "n_trades": 86,
-      "dd_breached": false,
-      "score": 0.596
-    },
-    {
       "family": "rsi_bollinger",
       "params": {
-        "rsi_period": 14,
+        "rsi_period": 7,
         "rsi_low": 30,
         "rsi_high": 75,
         "bb_period": 20,
         "bb_std": 2.0,
-        "atr_stop_mult": 3.0
+        "atr_stop_mult": 2.5
       },
-      "oos_sharpe": 0.268,
-      "oos_profit_factor": 1.281,
-      "oos_return_pct": 0.0151,
-      "n_trades": 26,
+      "oos_sharpe": 5.435,
+      "oos_profit_factor": 1.498,
+      "oos_return_pct": 0.0522,
+      "n_trades": 74,
       "dd_breached": false,
-      "score": 0.268
+      "score": 5.435
     },
     {
       "family": "rsi_bollinger",
@@ -86,14 +54,14 @@
         "rsi_high": 75,
         "bb_period": 20,
         "bb_std": 2.0,
-        "atr_stop_mult": 3.0
+        "atr_stop_mult": 2.5
       },
-      "oos_sharpe": 0.263,
-      "oos_profit_factor": 1.434,
-      "oos_return_pct": 0.0096,
-      "n_trades": 11,
+      "oos_sharpe": 5.28,
+      "oos_profit_factor": 1.785,
+      "oos_return_pct": 0.0306,
+      "n_trades": 22,
       "dd_breached": false,
-      "score": 0.263
+      "score": 5.28
     },
     {
       "family": "rsi_bollinger",
@@ -101,97 +69,135 @@
         "rsi_period": 14,
         "rsi_low": 25,
         "rsi_high": 75,
-        "bb_period": 20,
-        "bb_std": 2.0,
-        "atr_stop_mult": 2.0
-      },
-      "oos_sharpe": 0.217,
-      "oos_profit_factor": 1.305,
-      "oos_return_pct": 0.0081,
-      "n_trades": 14,
-      "dd_breached": false,
-      "score": 0.217
-    },
-    {
-      "family": "rsi_bollinger",
-      "params": {
-        "rsi_period": 14,
-        "rsi_low": 30,
-        "rsi_high": 75,
-        "bb_period": 20,
-        "bb_std": 2.0,
-        "atr_stop_mult": 2.0
-      },
-      "oos_sharpe": 0.21,
-      "oos_profit_factor": 1.203,
-      "oos_return_pct": 0.0119,
-      "n_trades": 32,
-      "dd_breached": false,
-      "score": 0.21
-    },
-    {
-      "family": "rsi_bollinger",
-      "params": {
-        "rsi_period": 14,
-        "rsi_low": 30,
-        "rsi_high": 70,
         "bb_period": 20,
         "bb_std": 2.5,
-        "atr_stop_mult": 3.0
+        "atr_stop_mult": 2.5
       },
-      "oos_sharpe": 0.204,
+      "oos_sharpe": 5.106,
+      "oos_profit_factor": 1.938,
+      "oos_return_pct": 0.0281,
+      "n_trades": 17,
+      "dd_breached": false,
+      "score": 5.106
+    },
+    {
+      "family": "rsi_bollinger",
+      "params": {
+        "rsi_period": 14,
+        "rsi_low": 25,
+        "rsi_high": 70,
+        "bb_period": 20,
+        "bb_std": 2.0,
+        "atr_stop_mult": 2.5
+      },
+      "oos_sharpe": 5.097,
+      "oos_profit_factor": 1.654,
+      "oos_return_pct": 0.0323,
+      "n_trades": 29,
+      "dd_breached": false,
+      "score": 5.097
+    },
+    {
+      "family": "rsi_bollinger",
+      "params": {
+        "rsi_period": 14,
+        "rsi_low": 25,
+        "rsi_high": 75,
+        "bb_period": 20,
+        "bb_std": 2.0,
+        "atr_stop_mult": 1.5
+      },
+      "oos_sharpe": 5.017,
+      "oos_profit_factor": 1.649,
+      "oos_return_pct": 0.0292,
+      "n_trades": 28,
+      "dd_breached": false,
+      "score": 5.017
+    },
+    {
+      "family": "rsi_bollinger",
+      "params": {
+        "rsi_period": 14,
+        "rsi_low": 25,
+        "rsi_high": 70,
+        "bb_period": 20,
+        "bb_std": 2.0,
+        "atr_stop_mult": 1.5
+      },
+      "oos_sharpe": 5.001,
+      "oos_profit_factor": 1.586,
+      "oos_return_pct": 0.0313,
+      "n_trades": 36,
+      "dd_breached": false,
+      "score": 5.001
+    },
+    {
+      "family": "rsi_bollinger",
+      "params": {
+        "rsi_period": 7,
+        "rsi_low": 25,
+        "rsi_high": 75,
+        "bb_period": 20,
+        "bb_std": 2.0,
+        "atr_stop_mult": 2.5
+      },
+      "oos_sharpe": 4.824,
+      "oos_profit_factor": 1.497,
+      "oos_return_pct": 0.0448,
+      "n_trades": 60,
+      "dd_breached": false,
+      "score": 4.824
+    },
+    {
+      "family": "rsi_bollinger",
+      "params": {
+        "rsi_period": 14,
+        "rsi_low": 25,
+        "rsi_high": 75,
+        "bb_period": 20,
+        "bb_std": 2.5,
+        "atr_stop_mult": 1.5
+      },
+      "oos_sharpe": 4.754,
+      "oos_profit_factor": 1.724,
+      "oos_return_pct": 0.0263,
+      "n_trades": 22,
+      "dd_breached": false,
+      "score": 4.754
+    },
+    {
+      "family": "rsi_bollinger",
+      "params": {
+        "rsi_period": 7,
+        "rsi_low": 25,
+        "rsi_high": 75,
+        "bb_period": 20,
+        "bb_std": 2.0,
+        "atr_stop_mult": 1.5
+      },
+      "oos_sharpe": 4.719,
       "oos_profit_factor": 1.345,
-      "oos_return_pct": 0.0096,
-      "n_trades": 15,
+      "oos_return_pct": 0.0434,
+      "n_trades": 83,
       "dd_breached": false,
-      "score": 0.204
+      "score": 4.719
     },
     {
       "family": "rsi_bollinger",
       "params": {
         "rsi_period": 14,
-        "rsi_low": 30,
+        "rsi_low": 25,
         "rsi_high": 70,
         "bb_period": 20,
         "bb_std": 2.5,
-        "atr_stop_mult": 2.0
+        "atr_stop_mult": 1.5
       },
-      "oos_sharpe": 0.177,
-      "oos_profit_factor": 1.2,
-      "oos_return_pct": 0.0084,
-      "n_trades": 21,
+      "oos_sharpe": 4.563,
+      "oos_profit_factor": 1.662,
+      "oos_return_pct": 0.0264,
+      "n_trades": 25,
       "dd_breached": false,
-      "score": 0.177
-    },
-    {
-      "family": "ema_cross",
-      "params": {
-        "fast": 10,
-        "slow": 100,
-        "atr_period": 14,
-        "atr_stop_mult": 2.0
-      },
-      "oos_sharpe": 0.168,
-      "oos_profit_factor": 1.197,
-      "oos_return_pct": 0.0222,
-      "n_trades": 52,
-      "dd_breached": false,
-      "score": 0.168
-    },
-    {
-      "family": "ema_cross",
-      "params": {
-        "fast": 30,
-        "slow": 200,
-        "atr_period": 14,
-        "atr_stop_mult": 2.0
-      },
-      "oos_sharpe": 0.163,
-      "oos_profit_factor": 1.227,
-      "oos_return_pct": 0.0221,
-      "n_trades": 38,
-      "dd_breached": false,
-      "score": 0.163
+      "score": 4.563
     }
   ]
 }

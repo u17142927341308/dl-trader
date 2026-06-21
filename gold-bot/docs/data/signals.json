@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-06-21T20:50:15.537298Z",
+  "generated_at": "2026-06-21T21:09:11.301692Z",
   "instrument": "MGC",
-  "timeframe": "1d",
+  "timeframe": "15min",
   "signal": "FLAT",
   "entry": null,
   "stop_loss": null,

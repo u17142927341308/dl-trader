@@ -96,9 +96,9 @@ def test_iter_search_space_expands_grids() -> None:
         assert strat.name == fam
     assert families_seen == set(FAMILIES)
 
-    # ema_cross grid in the YAML: fast[4] x slow[3] x atr_period[1] x stop[2] = 24.
+    # ema_cross grid in the YAML: fast[3] x slow[3] x atr_period[1] x stop[2] = 18.
     ema_count = sum(1 for fam, _ in combos if fam == "ema_cross")
-    assert ema_count == 24
+    assert ema_count == 18
 
 
 def test_strategy_id_is_stable(ohlcv: pd.DataFrame) -> None:

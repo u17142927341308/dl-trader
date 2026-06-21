@@ -1,22 +1,20 @@
 {
-  "strategy_id": "macd_trend__atr_stop_mult2.0_fast12_regime_ma100_signal9_slow26",
-  "family": "macd_trend",
+  "strategy_id": "rsi_bollinger__atr_stop_mult2.5_bb_period20_bb_std2.0_rsi_high75_rsi_low30_rsi_period7",
+  "family": "rsi_bollinger",
   "params": {
-    "fast": 12,
-    "slow": 26,
-    "signal": 9,
-    "regime_ma": 100,
-    "atr_stop_mult": 2.0
+    "rsi_period": 7,
+    "rsi_low": 30,
+    "rsi_high": 75,
+    "bb_period": 20,
+    "bb_std": 2.0,
+    "atr_stop_mult": 2.5
   },
   "accepted": false,
-  "oos_sharpe": 0.607,
-  "oos_profit_factor": 1.626,
-  "oos_return_pct": 0.0633,
-  "n_trades": 87,
+  "oos_sharpe": 5.435,
+  "oos_profit_factor": 1.498,
+  "oos_return_pct": 0.0522,
+  "n_trades": 74,
   "gate_failures": [
-    "oos_sharpe",
-    "min_trades",
-    "walk_forward_efficiency",
     "deflated_sharpe",
     "monte_carlo_survival"
   ]

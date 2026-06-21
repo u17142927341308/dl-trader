@@ -103,6 +103,14 @@ class Settings(BaseSettings):
     history_start: str = "2007-01-01"
     data_cache_dir: str = ".cache"
 
+    # Timeframe for backtest AND live signals. Intraday (e.g. "15min") is what
+    # day-trading needs; "1d" is the daily fallback. ``periods_per_year`` is the
+    # annualisation factor for that timeframe (15min RTH: ~26 bars/day * 252).
+    timeframe: str = "15min"
+    periods_per_year: int = 6552
+    # How many recent months of intraday history to pull from Alpha Vantage.
+    av_intraday_months: int = 24
+
     # Alpha Vantage (gold proxy via the GLD ETF). Key from env only; never commit.
     alphavantage_api_key: str = ""
     gold_proxy_symbol: str = "GLD"
