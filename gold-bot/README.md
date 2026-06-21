@@ -191,3 +191,41 @@ will blow up a funded account. The search (Phase 5) is therefore disciplined:
    walk-forward efficiency above a floor, and Monte-Carlo bust-probability ≤ 5%.
 5. **If nothing passes, nothing is shipped.** The dashboard says "searching /
    none found" rather than lowering the bar. That honesty is a feature.
+
+## Reading the dashboard
+
+| Panel | What it tells you |
+|-------|-------------------|
+| **Status bar** | Last run time, data freshness, search state (`accepted` / why it failed), `$` headroom to the trailing-DD floor, daily-loss state. |
+| **Current signal** | Big `LONG`/`SHORT`/`FLAT` with entry, stop, 2R target, size, `$` risk, valid-until — **advisory only, never auto-executed** (banner says so). A signal older than its window is flagged `STALE`. |
+| **Active strategy** | `ACTIVE` with params + holdout numbers when a strategy is live; otherwise `NOT ACCEPTED` showing the best candidate found this cycle **and the exact gate criteria it failed** — transparency over a pretty curve. |
+| **Equity curve** | The chained out-of-sample equity (`$`) with the **trailing-DD floor** overlaid, so you can see headroom over time. |
+| **Metrics** | The full suite, OOS vs holdout side by side (Sharpe, Sortino, Calmar, profit factor, expectancy, max DD, Deflated Sharpe, MC bust prob, …). |
+| **Walk-forward & trial ledger** | Total trials tried (honesty about multiple testing), per-family best, Deflated Sharpe, walk-forward efficiency, top trials. |
+| **Trade log** | Recent trades with entry/exit, size, net PnL and exit reason. |
+
+Every panel degrades to a clear empty state, and synthetic/demo runs are flagged
+`[SYNTHETIC DEMO DATA]` in the status so they are never mistaken for real results.
+
+## Extending to live Tradovate execution (later)
+
+This repo **displays** signals; it never places orders, and no broker
+credentials live anywhere near the public site. To actually trade, add a
+separate **always-on** process (e.g. an Oracle Cloud Free-Tier VPS) — *not*
+GitHub Actions or Pages — that:
+
+1. Authenticates to the **Tradovate REST/WebSocket API** with credentials stored
+   only on that host (env vars / a secrets manager, never committed).
+2. Consumes the very same `SignalArtifact` object that `signals/generator.py`
+   already produces (the schema is the integration seam), or imports
+   `signal_from_params()` directly to compute it in-process.
+3. Re-uses the **same `DynamicRiskManager`** for sizing and the same
+   `risk/prop_rules.py` trailing-DD / daily-loss logic as a live circuit breaker,
+   so live risk behaviour matches the backtest exactly.
+4. Translates the signal into bracket orders (entry + stop + target), reconciles
+   fills, and tracks real equity to keep the trailing-DD headroom accurate.
+
+Validate on a Tradovate **paper/sim** account for a meaningful period before
+risking a funded account. Start by writing a `TradovateExecutionAdapter` that
+takes a `SignalArtifact` and returns broker order ids — everything upstream is
+already built and tested for it.
