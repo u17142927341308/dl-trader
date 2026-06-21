@@ -91,11 +91,20 @@ typed, tested, and committed before moving on.
 ```bash
 cd gold-bot
 pip install -r requirements.txt
-# Real GC=F data (needs network); falls back to a labelled synthetic dataset:
-PYTHONPATH=src:. python -m gold_bot.run_research --out docs/data
+# Uses the committed real MGC 5-minute futures data (offline, no network),
+# resampled to the configured timeframe (default 15min):
+PYTHONPATH=src:. python -m gold_bot.run_research --source local --out docs/data
 # then open docs/index.html (or serve it):
 python -m http.server -d docs 8000   # -> http://localhost:8000
 ```
+
+**Data & timeframe.** Day-trading runs on an **intraday** timeframe
+(`GOLDBOT_TIMEFRAME`, default `15min`). The canonical research data is the
+committed **real MGC 5-minute futures** history in `data/mgc_5m.csv`, resampled
+to the timeframe and annualised from the bars-per-day in the data. Source order
+(`--source auto`): local real MGC → Alpha Vantage intraday (GLD proxy) →
+synthetic. No proxy scaling for the local futures data — these are real contract
+prices.
 
 The dashboard reads the freshly generated `docs/data/*.json`. If no strategy
 passes the gate, it honestly shows the **best candidate found and why it was

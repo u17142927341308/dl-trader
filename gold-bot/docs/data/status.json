@@ -1,10 +1,11 @@
 {
-  "generated_at": "2026-06-21T20:27:37.336336Z",
-  "data_as_of": "2023-06-30T00:00:00+00:00",
+  "generated_at": "2026-06-21T21:09:11.290202Z",
+  "data_as_of": "2026-06-19T03:45:00+00:00",
   "search_state": "best candidate failed the acceptance gate",
-  "account_headroom_to_trailing_dd": 5165.740913963644,
+  "account_headroom_to_trailing_dd": 4611.984894441979,
   "daily_loss_state": "ok",
-  "n_trials": 56,
-  "note": "best candidate failed the acceptance gate [SYNTHETIC DEMO DATA]",
-  "data_source": "synthetic"
+  "n_trials": 66,
+  "note": "best candidate failed the acceptance gate",
+  "data_source": "local:MGC15min",
+  "timeframe": "15min"
 }

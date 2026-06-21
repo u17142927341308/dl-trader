@@ -18,7 +18,8 @@ from ..strategies.base import make_strategy_id
 from ..strategies.registry import build
 from .schema import SignalArtifact
 
-_TF_HOURS = {"1d": 24, "1h": 1, "1wk": 168}
+# How long a freshly emitted signal stays valid, per timeframe (minutes).
+_TF_VALID_MIN = {"5min": 10, "15min": 30, "30min": 60, "60min": 120, "1h": 120, "1d": 1440}
 
 
 def _now_iso() -> str:
@@ -98,7 +99,7 @@ def signal_from_params(
         headroom=s.account_rules.trailing_drawdown,
         day_loss=0.0,
     )
-    valid_hours = _TF_HOURS.get(timeframe, 24)
+    valid_min = _TF_VALID_MIN.get(timeframe, 1440)
 
     return SignalArtifact(
         generated_at=_now_iso(),
@@ -116,7 +117,7 @@ def signal_from_params(
             f"stop={strat.atr_stop_mult:g}xATR, 2R target."
         ),
         strategy_id=make_strategy_id(family, params),
-        valid_until=(datetime.now(UTC) + timedelta(hours=valid_hours))
+        valid_until=(datetime.now(UTC) + timedelta(minutes=valid_min))
         .isoformat()
         .replace("+00:00", "Z"),
         auto_execution=False,

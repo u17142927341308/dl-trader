@@ -6,7 +6,7 @@ import json
 
 from gold_bot.backtest.metrics import Metrics
 from gold_bot.reporting.export import export_all
-from gold_bot.run_research import synthetic_gold
+from gold_bot.run_research import synthetic_5m
 from gold_bot.search.gating import evaluate_gate
 from gold_bot.search.orchestrator import run_search
 from gold_bot.search.walk_forward import WFOConfig, make_windows
@@ -71,11 +71,12 @@ def test_gate_rejects_bust_probability() -> None:
 
 
 def test_run_search_smoke_and_export(tmp_path) -> None:
-    # Small synthetic dataset + small windows so the smoke test is fast.
-    df = synthetic_gold(n=1600, seed=3)
+    # Small intraday synthetic dataset + small windows so the smoke test is fast.
+    df = synthetic_5m(days=12, seed=3)
     outcome = run_search(
         df,
-        wfo_cfg=WFOConfig("rolling", train_bars=500, test_bars=200, step_bars=200),
+        wfo_cfg=WFOConfig("rolling", train_bars=700, test_bars=300, step_bars=300),
+        periods_per_year=69552,
         max_trials_per_family=8,
     )
     assert outcome.n_trials > 0
@@ -83,7 +84,7 @@ def test_run_search_smoke_and_export(tmp_path) -> None:
     # Every trial was logged.
     assert len(outcome.ledger.trials) == outcome.n_trials
 
-    written = export_all(outcome, df, tmp_path, timeframe="1d")
+    written = export_all(outcome, df, tmp_path, timeframe="15min")
     assert "status.json" in written and "signals.json" in written
 
     # Exported JSON must validate against the shared schema.
@@ -96,7 +97,7 @@ def test_run_search_smoke_and_export(tmp_path) -> None:
 
 
 def test_search_no_windows_is_honest() -> None:
-    df = synthetic_gold(n=300, seed=1)
-    outcome = run_search(df, wfo_cfg=WFOConfig(train_bars=750, test_bars=250))
+    df = synthetic_5m(days=2, seed=1)
+    outcome = run_search(df, wfo_cfg=WFOConfig(train_bars=5000, test_bars=2000))
     assert not outcome.accepted
     assert "insufficient" in outcome.note

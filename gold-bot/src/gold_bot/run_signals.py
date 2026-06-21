@@ -28,24 +28,26 @@ def _now_iso() -> str:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="gold-bot signals refresh")
-    parser.add_argument("--source", choices=["yfinance", "synthetic"], default="yfinance")
+    parser.add_argument(
+        "--source", choices=["auto", "local", "alphavantage", "synthetic"], default="auto"
+    )
     parser.add_argument("--out", default="docs/data")
     args = parser.parse_args(argv)
 
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     s = get_settings()
-    df, synthetic = load_data(args.source)
+    df, source_label = load_data(args.source)
 
     strat_path = out / "current_strategy.json"
     if strat_path.exists():
         cs = json.loads(strat_path.read_text())
-        sig = signal_from_params(cs["family"], cs["params"], df, timeframe="1d", settings=s)
+        sig = signal_from_params(cs["family"], cs["params"], df, timeframe=s.timeframe, settings=s)
     else:
         sig = SignalArtifact(
             generated_at=_now_iso(),
             instrument=s.instrument.symbol,
-            timeframe="1d",
+            timeframe=s.timeframe,
             signal="FLAT",
             account_headroom_to_trailing_dd=s.account_rules.trailing_drawdown,
             confidence_notes="No accepted strategy on file.",
@@ -61,7 +63,7 @@ def main(argv: list[str] | None = None) -> int:
         status["data_as_of"] = df.index[-1].isoformat() if len(df) else None
         status_path.write_text(json.dumps(status, indent=2, default=str))
 
-    print(f"signals: {sig.signal} (synthetic={synthetic})")
+    print(f"signals: {sig.signal} (source={source_label})")
     return 0
 
 
