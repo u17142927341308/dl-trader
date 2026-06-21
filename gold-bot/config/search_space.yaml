@@ -1,0 +1,59 @@
+# Strategy search space.
+#
+# Each top-level key is a strategy FAMILY registered in
+# src/gold_bot/strategies/registry.py. The `params` block defines the grid /
+# ranges the optimizer samples from. Keep grids deliberately SMALL: every extra
+# combination inflates the multiple-testing penalty (Deflated Sharpe) and the
+# risk of data-snooping. Robustness > breadth.
+#
+# `type: grid`  -> optimizer enumerates the cartesian product of the lists.
+# `type: range` -> optimizer (Optuna TPE) samples low..high (step for ints).
+
+ema_cross:
+  description: "Trend following: long when fast EMA above slow EMA, flat/short otherwise."
+  type: grid
+  params:
+    fast: [10, 20, 30, 50]
+    slow: [100, 150, 200]
+    atr_period: [14]
+    atr_stop_mult: [2.0, 3.0]
+
+rsi_bollinger:
+  description: "Mean reversion: enter on RSI extreme + Bollinger band touch."
+  type: grid
+  params:
+    rsi_period: [14]
+    rsi_low: [25, 30]
+    rsi_high: [70, 75]
+    bb_period: [20]
+    bb_std: [2.0, 2.5]
+    atr_stop_mult: [2.0, 3.0]
+
+donchian_breakout:
+  description: "Breakout: enter on N-bar high/low break, exit on opposite channel."
+  type: grid
+  params:
+    entry_lookback: [20, 40, 55]
+    exit_lookback: [10, 20]
+    atr_period: [14]
+    atr_stop_mult: [2.0, 3.0]
+
+macd_trend:
+  description: "Trend: MACD line crossing signal line, with a slow regime filter."
+  type: grid
+  params:
+    fast: [12]
+    slow: [26]
+    signal: [9]
+    regime_ma: [100, 200]
+    atr_stop_mult: [2.0, 3.0]
+
+# Global search controls (consumed by search/orchestrator.py).
+search:
+  max_trials_per_family: 200      # cap; total trial count feeds the DSR penalty
+  optimizer: grid                 # grid | optuna
+  walk_forward:
+    scheme: rolling               # rolling | anchored
+    train_bars: 750
+    test_bars: 250
+    step_bars: 250

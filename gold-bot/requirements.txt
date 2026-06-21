@@ -1,0 +1,30 @@
+# Core data / numerics
+pandas>=2.2,<3.0
+numpy>=1.26,<2.2
+pyarrow>=15.0          # parquet caching
+scipy>=1.11            # deflated Sharpe / stats
+
+# Config
+pydantic>=2.6,<3.0
+pydantic-settings>=2.2
+PyYAML>=6.0
+
+# Data sources (pluggable adapters)
+yfinance>=0.2.40
+
+# Indicators (optional fast path; indicators.py also ships pure-pandas fallbacks)
+pandas-ta>=0.3.14b0
+
+# Backtest & search (added in later phases; pinned here for reproducibility)
+vectorbt>=0.26
+optuna>=3.5
+
+# ML (feature-flagged, later phase)
+scikit-learn>=1.4
+lightgbm>=4.3
+
+# Quality
+ruff>=0.4
+black>=24.0
+mypy>=1.9
+pytest>=8.0

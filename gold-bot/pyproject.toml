@@ -1,0 +1,37 @@
+[project]
+name = "gold-bot"
+version = "0.1.0"
+description = "Gold Futures (GC/MGC) strategy discovery & signal dashboard for a Tradovate 50K funded account"
+requires-python = ">=3.11"
+
+# Source layout: src/gold_bot
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+# E/F = pyflakes+pycodestyle, I = isort, B = bugbear, UP = pyupgrade
+select = ["E", "F", "I", "B", "UP", "W"]
+ignore = ["E501"]  # line length handled by black
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_unused_configs = true
+disallow_untyped_defs = true
+warn_return_any = true
+no_implicit_optional = true
+ignore_missing_imports = true   # third-party libs (yfinance, vectorbt) ship no stubs
+files = ["src", "tests"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+pythonpath = ["src", "."]
