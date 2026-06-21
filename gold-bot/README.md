@@ -77,7 +77,7 @@ typed, tested, and committed before moving on.
 
 - [x] **Phase 1 — Scaffold, config, data adapter + caching, indicators + no-look-ahead tests**
 - [x] **Phase 2 — Strategy ABC + families (ema_cross, rsi_bollinger, donchian_breakout, macd_trend) + registry**
-- [ ] Phase 3 — Event-driven engine (trailing-DD, daily-loss, costs) + vectorbt fast runner; reconcile
+- [x] **Phase 3 — Event-driven engine (trailing-DD, daily-loss, costs) + fast runner; reconciled**
 - [ ] Phase 4 — Metrics suite (Deflated Sharpe, Monte Carlo) with tests
 - [ ] Phase 5 — Walk-forward + optimizer + gating + orchestrator
 - [ ] Phase 6 — Risk manager wired into backtest + signal paths
@@ -100,16 +100,22 @@ gold-bot/
 │   │   └── cache.py            # parquet cache + hash integrity checks
 │   ├── features/
 │   │   └── indicators.py       # SMA/EMA/RSI/ATR/Bollinger/MACD/Donchian, all causal
-│   └── strategies/
-│       ├── base.py             # Strategy ABC -> target-position {-1,0,1}, causal
-│       ├── ema_cross.py        # trend
-│       ├── rsi_bollinger.py    # mean reversion
-│       ├── donchian_breakout.py# breakout
-│       ├── macd_trend.py       # trend + regime filter
-│       └── registry.py         # auto-register families + search-space expansion
+│   ├── strategies/
+│   │   ├── base.py             # Strategy ABC -> target-position {-1,0,1}, causal
+│   │   ├── ema_cross.py        # trend
+│   │   ├── rsi_bollinger.py    # mean reversion
+│   │   ├── donchian_breakout.py# breakout
+│   │   ├── macd_trend.py       # trend + regime filter
+│   │   └── registry.py         # auto-register families + search-space expansion
+│   ├── risk/
+│   │   └── prop_rules.py       # TrailingDrawdown + DailyLossLimit (path-dependent)
+│   └── backtest/
+│       ├── event_engine.py     # bar-by-bar verifier: prop rules + costs + stops
+│       └── vectorbt_runner.py  # fast vectorised pass for the search (reconciled)
 ├── docs/                       # gold-bot dashboard (GitHub Pages root)
-└── tests/                      # 39 tests: no-look-ahead (indicators + signals),
-                                # cache integrity, config, economics, registry/grids
+└── tests/                      # 53 tests: no-look-ahead (indicators + signals),
+                                # cache integrity, config, registry/grids, prop-rule
+                                # edge cases, engine breaches, event/fast reconcile
 ```
 
 **Design highlights**
