@@ -79,12 +79,27 @@ typed, tested, and committed before moving on.
 - [x] **Phase 2 — Strategy ABC + families (ema_cross, rsi_bollinger, donchian_breakout, macd_trend) + registry**
 - [x] **Phase 3 — Event-driven engine (trailing-DD, daily-loss, costs) + fast runner; reconciled**
 - [x] **Phase 4 — Metrics suite (Deflated Sharpe, Monte Carlo) with hand-checked tests**
-- [ ] Phase 5 — Walk-forward + optimizer + gating + orchestrator
-- [ ] Phase 6 — Risk manager wired into backtest + signal paths
-- [ ] Phase 7 — Signal generator + JSON exporters + schema
-- [~] Phase 8 — Dashboard front-end (shell live on Pages; rich views pending)
-- [~] Phase 9 — GitHub Actions + Pages deployment (Pages wired; compute workflows pending)
+- [x] **Phase 5 — Walk-forward + optimizer + gating + orchestrator (the disciplined search)**
+- [x] **Phase 6 — DynamicRiskManager wired into BOTH the backtest and signal paths**
+- [x] **Phase 7 — Signal generator + JSON exporters + pydantic schema**
+- [~] Phase 8 — Dashboard front-end (live, fed by real artifacts; rich trade-log/plateau pending)
+- [x] **Phase 9 — GitHub Actions (research + signals) + Pages deployment**
 - [ ] Phase 10 — Docs, final test pass, "extend to live Tradovate" note
+
+### See the dashboard now
+
+```bash
+cd gold-bot
+pip install -r requirements.txt
+# Real GC=F data (needs network); falls back to a labelled synthetic dataset:
+PYTHONPATH=src:. python -m gold_bot.run_research --out docs/data
+# then open docs/index.html (or serve it):
+python -m http.server -d docs 8000   # -> http://localhost:8000
+```
+
+The dashboard reads the freshly generated `docs/data/*.json`. If no strategy
+passes the gate, it honestly shows the **best candidate found and why it was
+rejected** rather than shipping an overfit curve.
 
 ## What Phase 1 delivers
 
@@ -108,16 +123,32 @@ gold-bot/
 │   │   ├── macd_trend.py       # trend + regime filter
 │   │   └── registry.py         # auto-register families + search-space expansion
 │   ├── risk/
-│   │   └── prop_rules.py       # TrailingDrawdown + DailyLossLimit (path-dependent)
-│   └── backtest/
-│       ├── event_engine.py     # bar-by-bar verifier: prop rules + costs + stops
-│       ├── vectorbt_runner.py  # fast vectorised pass for the search (reconciled)
-│       └── metrics.py          # full suite + Deflated Sharpe + Monte-Carlo bust
-├── docs/                       # gold-bot dashboard (GitHub Pages root)
-└── tests/                      # 73 tests: no-look-ahead (indicators + signals),
+│   │   ├── prop_rules.py       # TrailingDrawdown + DailyLossLimit (path-dependent)
+│   │   ├── position_sizing.py  # ATR/vol-target sizing primitives
+│   │   └── manager.py          # DynamicRiskManager: sizing + DD circuit breaker
+│   ├── backtest/
+│   │   ├── event_engine.py     # bar-by-bar verifier: prop rules + costs + stops
+│   │   ├── vectorbt_runner.py  # fast vectorised pass for the search (reconciled)
+│   │   └── metrics.py          # full suite + Deflated Sharpe + Monte-Carlo bust
+│   ├── search/
+│   │   ├── walk_forward.py     # rolling/anchored WFO splitter + candidate eval
+│   │   ├── optimizer.py        # grid over the space, scored on OOS, every trial logged
+│   │   ├── gating.py           # acceptance gate (Sharpe/PF/DSR/MC/DD/daily-loss)
+│   │   └── orchestrator.py     # search -> gate -> holdout-once loop
+│   ├── signals/
+│   │   ├── schema.py           # pydantic models shared by back-end + front-end
+│   │   └── generator.py        # accepted strategy + latest bars -> advisory signal
+│   ├── reporting/
+│   │   └── export.py           # write validated docs/data/*.json
+│   ├── run_research.py         # data -> search -> gate -> export entry point
+│   └── run_signals.py          # lightweight, frequent signal refresh
+# (repo root) .github/workflows/ # gold-research.yml, gold-signals.yml, pages.yml
+├── docs/                       # gold-bot dashboard (GitHub Pages root) + data/*.json
+└── tests/                      # 86 tests: no-look-ahead (indicators + signals),
                                 # cache integrity, config, registry/grids, prop-rule
                                 # edge cases, engine breaches, event/fast reconcile,
-                                # and every metric vs a hand-computed fixture
+                                # every metric vs a hand-computed fixture, WFO windows,
+                                # gating logic, search smoke + JSON-schema validation
 ```
 
 **Design highlights**
@@ -160,3 +191,41 @@ will blow up a funded account. The search (Phase 5) is therefore disciplined:
    walk-forward efficiency above a floor, and Monte-Carlo bust-probability ≤ 5%.
 5. **If nothing passes, nothing is shipped.** The dashboard says "searching /
    none found" rather than lowering the bar. That honesty is a feature.
+
+## Reading the dashboard
+
+| Panel | What it tells you |
+|-------|-------------------|
+| **Status bar** | Last run time, data freshness, search state (`accepted` / why it failed), `$` headroom to the trailing-DD floor, daily-loss state. |
+| **Current signal** | Big `LONG`/`SHORT`/`FLAT` with entry, stop, 2R target, size, `$` risk, valid-until — **advisory only, never auto-executed** (banner says so). A signal older than its window is flagged `STALE`. |
+| **Active strategy** | `ACTIVE` with params + holdout numbers when a strategy is live; otherwise `NOT ACCEPTED` showing the best candidate found this cycle **and the exact gate criteria it failed** — transparency over a pretty curve. |
+| **Equity curve** | The chained out-of-sample equity (`$`) with the **trailing-DD floor** overlaid, so you can see headroom over time. |
+| **Metrics** | The full suite, OOS vs holdout side by side (Sharpe, Sortino, Calmar, profit factor, expectancy, max DD, Deflated Sharpe, MC bust prob, …). |
+| **Walk-forward & trial ledger** | Total trials tried (honesty about multiple testing), per-family best, Deflated Sharpe, walk-forward efficiency, top trials. |
+| **Trade log** | Recent trades with entry/exit, size, net PnL and exit reason. |
+
+Every panel degrades to a clear empty state, and synthetic/demo runs are flagged
+`[SYNTHETIC DEMO DATA]` in the status so they are never mistaken for real results.
+
+## Extending to live Tradovate execution (later)
+
+This repo **displays** signals; it never places orders, and no broker
+credentials live anywhere near the public site. To actually trade, add a
+separate **always-on** process (e.g. an Oracle Cloud Free-Tier VPS) — *not*
+GitHub Actions or Pages — that:
+
+1. Authenticates to the **Tradovate REST/WebSocket API** with credentials stored
+   only on that host (env vars / a secrets manager, never committed).
+2. Consumes the very same `SignalArtifact` object that `signals/generator.py`
+   already produces (the schema is the integration seam), or imports
+   `signal_from_params()` directly to compute it in-process.
+3. Re-uses the **same `DynamicRiskManager`** for sizing and the same
+   `risk/prop_rules.py` trailing-DD / daily-loss logic as a live circuit breaker,
+   so live risk behaviour matches the backtest exactly.
+4. Translates the signal into bracket orders (entry + stop + target), reconciles
+   fills, and tracks real equity to keep the trailing-DD headroom accurate.
+
+Validate on a Tradovate **paper/sim** account for a meaningful period before
+risking a funded account. Start by writing a `TradovateExecutionAdapter` that
+takes a `SignalArtifact` and returns broker order ids — everything upstream is
+already built and tested for it.

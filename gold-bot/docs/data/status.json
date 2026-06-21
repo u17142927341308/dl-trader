@@ -1,8 +1,10 @@
 {
-  "generated_at": null,
-  "data_as_of": null,
-  "search_state": "no run yet",
-  "account_headroom_to_trailing_dd": null,
-  "daily_loss_state": "n/a",
-  "note": "Compute layer has not run yet. Placeholder published with the dashboard shell."
+  "generated_at": "2026-06-21T20:27:37.336336Z",
+  "data_as_of": "2023-06-30T00:00:00+00:00",
+  "search_state": "best candidate failed the acceptance gate",
+  "account_headroom_to_trailing_dd": 5165.740913963644,
+  "daily_loss_state": "ok",
+  "n_trials": 56,
+  "note": "best candidate failed the acceptance gate [SYNTHETIC DEMO DATA]",
+  "data_source": "synthetic"
 }

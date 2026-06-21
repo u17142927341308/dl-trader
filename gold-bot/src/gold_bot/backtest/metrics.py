@@ -21,6 +21,7 @@ backbone of the project:
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
@@ -28,6 +29,9 @@ from config.settings import AccountRules
 from scipy.stats import norm
 
 from ..risk.prop_rules import TrailingDrawdown
+
+if TYPE_CHECKING:
+    from .event_engine import BacktestResult
 
 _EPS = 1e-12
 
@@ -314,7 +318,7 @@ class Metrics:
 
 
 def compute_metrics(
-    result: object,  # backtest.event_engine.BacktestResult (avoid import cycle)
+    result: BacktestResult,
     *,
     periods_per_year: int = 252,
     account_rules: AccountRules | None = None,

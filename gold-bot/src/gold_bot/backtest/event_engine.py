@@ -33,6 +33,7 @@ from config.settings import (
     get_settings,
 )
 
+from ..risk.manager import DynamicRiskManager
 from ..risk.prop_rules import DailyLossLimit, TrailingDrawdown
 from ..strategies.base import StrategyResult
 
@@ -44,10 +45,13 @@ class EventConfig:
     instrument: InstrumentSpec
     costs: CostModel
     rules: AccountRules
-    fixed_size: int = 1  # contracts; Phase 6 swaps in dynamic sizing
+    fixed_size: int = 1  # contracts; used when risk_manager is None
     use_stops: bool = True
     enforce_prop: bool = True
     ratchet_mode: str = "eod"
+    # When set, sizes each trade dynamically (vol-target + DD circuit breaker)
+    # via the SAME code path the live signal generator uses.
+    risk_manager: DynamicRiskManager | None = None
 
     @classmethod
     def from_settings(cls, settings: Settings | None = None, **overrides: object) -> EventConfig:
@@ -220,8 +224,18 @@ def run_event_backtest(
             if sim.side != 0:
                 sim.close_position(decision_price, sim.idx[i - 1] if i >= 1 else time, "signal")
             if target != 0:
-                size = max(1, int(cfg.fixed_size))
-                sim.open_position(target, decision_price, size, sim.idx[i - 1] if i >= 1 else time, decision_atr)
+                if cfg.risk_manager is not None:
+                    headroom = equity - sim.tdd.floor
+                    day_loss = day_start_equity - equity
+                    size = cfg.risk_manager.size(
+                        decision_atr, sim.stop_mult, equity, headroom, day_loss
+                    )
+                else:
+                    size = max(1, int(cfg.fixed_size))
+                if size > 0:
+                    sim.open_position(
+                        target, decision_price, size, sim.idx[i - 1] if i >= 1 else time, decision_atr
+                    )
 
         # The bar's exposure is the position held into it (before any intrabar exit).
         pos_out[i] = sim.side

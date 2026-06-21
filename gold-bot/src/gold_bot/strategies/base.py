@@ -33,6 +33,12 @@ from ..features import indicators as ind
 ParamSpec = dict[str, tuple[type, Any]]
 
 
+def make_strategy_id(family: str, params: dict[str, Any]) -> str:
+    """Deterministic, human-readable id from a family + its parameters."""
+    parts = "_".join(f"{k}{v}" for k, v in sorted(params.items()))
+    return f"{family}__{parts}"
+
+
 @dataclass
 class StrategyResult:
     """Output of a strategy over a full price frame."""
@@ -46,8 +52,7 @@ class StrategyResult:
 
     @property
     def strategy_id(self) -> str:
-        parts = "_".join(f"{k}{v}" for k, v in sorted(self.params.items()))
-        return f"{self.family}__{parts}"
+        return make_strategy_id(self.family, self.params)
 
 
 def signal_to_trades(signal: pd.Series) -> pd.DataFrame:

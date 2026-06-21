@@ -1,0 +1,23 @@
+{
+  "strategy_id": "macd_trend__atr_stop_mult2.0_fast12_regime_ma100_signal9_slow26",
+  "family": "macd_trend",
+  "params": {
+    "fast": 12,
+    "slow": 26,
+    "signal": 9,
+    "regime_ma": 100,
+    "atr_stop_mult": 2.0
+  },
+  "accepted": false,
+  "oos_sharpe": 0.607,
+  "oos_profit_factor": 1.626,
+  "oos_return_pct": 0.0633,
+  "n_trades": 87,
+  "gate_failures": [
+    "oos_sharpe",
+    "min_trades",
+    "walk_forward_efficiency",
+    "deflated_sharpe",
+    "monte_carlo_survival"
+  ]
+}

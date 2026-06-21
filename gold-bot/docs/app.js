@@ -65,19 +65,45 @@ function renderSignal(sig) {
     <p class="hint">${sig.confidence_notes || ""}</p>`;
 }
 
-function renderStrategy(strat) {
+function paramsStr(params) {
+  return params ? Object.entries(params).map(([k, v]) => `${k}=${v}`).join(", ") : "—";
+}
+
+function renderStrategy(strat, best) {
   const body = document.getElementById("strategy-body");
-  if (!body || !strat || !strat.strategy_id) return;
-  body.classList.remove("empty");
-  const params = strat.params ? Object.entries(strat.params).map(([k, v]) => `${k}=${v}`).join(", ") : "—";
-  body.innerHTML = `
-    <dl class="kv">
-      <dt>ID</dt><dd>${strat.strategy_id}</dd>
-      <dt>Family</dt><dd>${strat.family || "—"}</dd>
-      <dt>Params</dt><dd>${params}</dd>
-      <dt>Holdout Sharpe</dt><dd>${strat.holdout?.sharpe ?? "—"}</dd>
-      <dt>Holdout PF</dt><dd>${strat.holdout?.profit_factor ?? "—"}</dd>
-    </dl>`;
+  if (!body) return;
+
+  if (strat && strat.strategy_id) {
+    body.classList.remove("empty");
+    body.innerHTML = `
+      <div class="signal-big signal-LONG">ACTIVE</div>
+      <dl class="kv">
+        <dt>ID</dt><dd>${strat.strategy_id}</dd>
+        <dt>Family</dt><dd>${strat.family || "—"}</dd>
+        <dt>Params</dt><dd>${paramsStr(strat.params)}</dd>
+        <dt>Holdout Sharpe</dt><dd>${strat.holdout?.sharpe ?? "—"}</dd>
+        <dt>Holdout PF</dt><dd>${strat.holdout?.profit_factor ?? "—"}</dd>
+      </dl>`;
+    return;
+  }
+
+  // No accepted strategy — show the best candidate found and why it was rejected.
+  if (best && best.strategy_id) {
+    body.classList.remove("empty");
+    const fails = (best.gate_failures || []).join(", ") || "—";
+    body.innerHTML = `
+      <div class="signal-big signal-FLAT">NOT ACCEPTED</div>
+      <p class="hint">Best candidate found this cycle (shown for transparency; not live):</p>
+      <dl class="kv">
+        <dt>ID</dt><dd>${best.strategy_id}</dd>
+        <dt>Family</dt><dd>${best.family}</dd>
+        <dt>Params</dt><dd>${paramsStr(best.params)}</dd>
+        <dt>OOS Sharpe</dt><dd>${best.oos_sharpe ?? "—"}</dd>
+        <dt>OOS Profit factor</dt><dd>${best.oos_profit_factor ?? "—"}</dd>
+        <dt># Trades</dt><dd>${best.n_trades ?? "—"}</dd>
+        <dt>Gate failures</dt><dd>${fails}</dd>
+      </dl>`;
+  }
 }
 
 function renderMetrics(metrics) {
@@ -140,10 +166,11 @@ function renderWFO(wfo) {
 }
 
 async function main() {
-  const [status, signals, strategy, metrics, equity, trades, wfo] = await Promise.all([
+  const [status, signals, strategy, best, metrics, equity, trades, wfo] = await Promise.all([
     loadJSON("status.json"),
     loadJSON("signals.json"),
     loadJSON("current_strategy.json"),
+    loadJSON("best_candidate.json"),
     loadJSON("metrics.json"),
     loadJSON("equity_curve.json"),
     loadJSON("trades.json"),
@@ -151,7 +178,7 @@ async function main() {
   ]);
   renderStatus(status);
   renderSignal(signals);
-  renderStrategy(strategy);
+  renderStrategy(strategy, best);
   renderMetrics(metrics);
   renderEquity(equity);
   renderTrades(trades);

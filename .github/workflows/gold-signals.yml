@@ -1,0 +1,44 @@
+name: gold-bot signals
+
+# Lightweight, frequent signal refresh using the strategy the research job
+# already accepted. Does NOT re-run the search. Manual dispatch + hourly during
+# the trading week.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '7 13-21 * * 1-5'   # hourly across the US session (UTC)
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gold-signals
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: gold-bot
+
+jobs:
+  signals:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements-ci.txt
+
+      - name: Refresh signal
+        run: PYTHONPATH=src:. python -m gold_bot.run_signals --source yfinance --out docs/data
+
+      - name: Commit signal
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/data/signals.json docs/data/status.json
+          git commit -m "gold-bot: refresh signal [skip ci]" || echo "nothing to commit"
+          git push

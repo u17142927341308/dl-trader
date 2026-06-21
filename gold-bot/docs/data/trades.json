@@ -1,0 +1,874 @@
+{
+  "rows": [
+    {
+      "entry_time": "2014-11-17T00:00:00+00:00",
+      "exit_time": "2014-12-19T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 1022.36,
+      "exit": 1034.67,
+      "net_pnl": 119.67,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2015-01-06T00:00:00+00:00",
+      "exit_time": "2015-02-03T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 1015.94,
+      "exit": 974.52,
+      "net_pnl": 410.7,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2015-02-20T00:00:00+00:00",
+      "exit_time": "2015-03-05T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 941.37,
+      "exit": 954.87,
+      "net_pnl": -138.48,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2015-03-17T00:00:00+00:00",
+      "exit_time": "2015-04-10T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 916.78,
+      "exit": 848.88,
+      "net_pnl": 675.5,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2015-05-25T00:00:00+00:00",
+      "exit_time": "2015-05-26T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 920.19,
+      "exit": 916.21,
+      "net_pnl": -43.29,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2015-05-27T00:00:00+00:00",
+      "exit_time": "2015-05-28T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 918.38,
+      "exit": 915.72,
+      "net_pnl": -30.09,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2015-05-29T00:00:00+00:00",
+      "exit_time": "2015-06-01T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 916.35,
+      "exit": 914.9,
+      "net_pnl": -18.03,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2015-06-02T00:00:00+00:00",
+      "exit_time": "2015-06-16T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 905.18,
+      "exit": 916.4,
+      "net_pnl": -115.64,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2015-06-17T00:00:00+00:00",
+      "exit_time": "2015-07-10T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 932.86,
+      "exit": 941.53,
+      "net_pnl": 83.22,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2015-08-28T00:00:00+00:00",
+      "exit_time": "2015-09-24T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 964.59,
+      "exit": 1007.76,
+      "net_pnl": 428.26,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2015-10-19T00:00:00+00:00",
+      "exit_time": "2015-10-26T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 998.64,
+      "exit": 978.78,
+      "net_pnl": -202.08,
+      "reason": "stop"
+    },
+    {
+      "entry_time": "2015-10-27T00:00:00+00:00",
+      "exit_time": "2015-10-28T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 991.46,
+      "exit": 987.5,
+      "net_pnl": -43.1,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2015-10-29T00:00:00+00:00",
+      "exit_time": "2015-10-30T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 991.22,
+      "exit": 983.49,
+      "net_pnl": -79.04,
+      "reason": "end"
+    },
+    {
+      "entry_time": "2015-11-05T00:00:00+00:00",
+      "exit_time": "2015-11-20T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 1002.91,
+      "exit": 1001.11,
+      "net_pnl": -21.48,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2015-11-25T00:00:00+00:00",
+      "exit_time": "2015-12-21T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 977.02,
+      "exit": 921.81,
+      "net_pnl": 548.69,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2016-01-28T00:00:00+00:00",
+      "exit_time": "2016-02-10T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 890.05,
+      "exit": 890.3,
+      "net_pnl": -5.96,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2016-02-19T00:00:00+00:00",
+      "exit_time": "2016-03-16T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 862.7,
+      "exit": 842.79,
+      "net_pnl": 195.67,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2016-04-06T00:00:00+00:00",
+      "exit_time": "2016-04-15T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 851.46,
+      "exit": 858.7,
+      "net_pnl": -75.95,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2016-04-27T00:00:00+00:00",
+      "exit_time": "2016-05-20T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 851.17,
+      "exit": 821.69,
+      "net_pnl": 291.37,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2016-06-14T00:00:00+00:00",
+      "exit_time": "2016-06-15T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 853.81,
+      "exit": 849.71,
+      "net_pnl": -44.49,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2016-06-17T00:00:00+00:00",
+      "exit_time": "2016-07-27T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 830.42,
+      "exit": 755.99,
+      "net_pnl": 740.9,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2016-08-16T00:00:00+00:00",
+      "exit_time": "2016-08-19T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 754.61,
+      "exit": 766.01,
+      "net_pnl": -117.4,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2016-09-02T00:00:00+00:00",
+      "exit_time": "2016-09-19T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 746.94,
+      "exit": 745.54,
+      "net_pnl": 10.55,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2016-10-11T00:00:00+00:00",
+      "exit_time": "2016-10-14T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 787.2,
+      "exit": 778.84,
+      "net_pnl": -85.42,
+      "reason": "end"
+    },
+    {
+      "entry_time": "2016-10-18T00:00:00+00:00",
+      "exit_time": "2016-11-15T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 770.32,
+      "exit": 776.99,
+      "net_pnl": -70.13,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2016-11-15T00:00:00+00:00",
+      "exit_time": "2016-12-14T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 776.99,
+      "exit": 811.1,
+      "net_pnl": 337.65,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2016-12-21T00:00:00+00:00",
+      "exit_time": "2016-12-29T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 836.81,
+      "exit": 830.26,
+      "net_pnl": -68.9,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2016-12-30T00:00:00+00:00",
+      "exit_time": "2017-01-02T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 842.04,
+      "exit": 828.91,
+      "net_pnl": -134.81,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2017-01-31T00:00:00+00:00",
+      "exit_time": "2017-02-23T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 834.23,
+      "exit": 851.94,
+      "net_pnl": 173.63,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2017-03-03T00:00:00+00:00",
+      "exit_time": "2017-04-05T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 808.38,
+      "exit": 777.19,
+      "net_pnl": 308.39,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2017-04-12T00:00:00+00:00",
+      "exit_time": "2017-04-19T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 745.58,
+      "exit": 764.66,
+      "net_pnl": -194.28,
+      "reason": "stop"
+    },
+    {
+      "entry_time": "2017-05-11T00:00:00+00:00",
+      "exit_time": "2017-05-15T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 808.61,
+      "exit": 799.12,
+      "net_pnl": -98.44,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2017-05-19T00:00:00+00:00",
+      "exit_time": "2017-05-30T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 769.7,
+      "exit": 791.32,
+      "net_pnl": -219.71,
+      "reason": "stop"
+    },
+    {
+      "entry_time": "2017-06-06T00:00:00+00:00",
+      "exit_time": "2017-06-22T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 775.73,
+      "exit": 773.43,
+      "net_pnl": 19.47,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2017-06-30T00:00:00+00:00",
+      "exit_time": "2017-07-03T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 788.07,
+      "exit": 783.66,
+      "net_pnl": -47.61,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2017-07-06T00:00:00+00:00",
+      "exit_time": "2017-07-25T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 764.84,
+      "exit": 755.91,
+      "net_pnl": 85.8,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2017-08-11T00:00:00+00:00",
+      "exit_time": "2017-08-15T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 739.28,
+      "exit": 748.2,
+      "net_pnl": -92.71,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2017-08-25T00:00:00+00:00",
+      "exit_time": "2017-09-14T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 740.39,
+      "exit": 748.69,
+      "net_pnl": -86.54,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2017-09-26T00:00:00+00:00",
+      "exit_time": "2017-09-29T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 726.73,
+      "exit": 726.82,
+      "net_pnl": -2.65,
+      "reason": "end"
+    },
+    {
+      "entry_time": "2017-10-02T00:00:00+00:00",
+      "exit_time": "2017-10-05T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 718.6,
+      "exit": 734.45,
+      "net_pnl": -161.97,
+      "reason": "stop"
+    },
+    {
+      "entry_time": "2017-10-09T00:00:00+00:00",
+      "exit_time": "2017-10-30T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 758.51,
+      "exit": 786.41,
+      "net_pnl": 275.56,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2017-11-16T00:00:00+00:00",
+      "exit_time": "2017-11-17T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 823.27,
+      "exit": 809.04,
+      "net_pnl": -145.81,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2017-11-21T00:00:00+00:00",
+      "exit_time": "2017-11-27T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 818.63,
+      "exit": 819.13,
+      "net_pnl": 1.56,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2017-11-28T00:00:00+00:00",
+      "exit_time": "2017-11-30T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 829.95,
+      "exit": 824.58,
+      "net_pnl": -57.11,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2018-01-01T00:00:00+00:00",
+      "exit_time": "2018-01-22T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 813.27,
+      "exit": 811.46,
+      "net_pnl": -21.58,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2018-02-01T00:00:00+00:00",
+      "exit_time": "2018-02-14T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 840.15,
+      "exit": 830.54,
+      "net_pnl": -99.66,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2018-02-23T00:00:00+00:00",
+      "exit_time": "2018-03-12T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 804.13,
+      "exit": 814.87,
+      "net_pnl": -110.83,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2018-03-12T00:00:00+00:00",
+      "exit_time": "2018-03-13T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 814.87,
+      "exit": 799.47,
+      "net_pnl": -157.43,
+      "reason": "stop"
+    },
+    {
+      "entry_time": "2018-03-13T00:00:00+00:00",
+      "exit_time": "2018-03-30T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 798.75,
+      "exit": 778.63,
+      "net_pnl": 197.71,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2018-05-03T00:00:00+00:00",
+      "exit_time": "2018-05-07T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 801.96,
+      "exit": 796.57,
+      "net_pnl": -57.37,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2018-05-15T00:00:00+00:00",
+      "exit_time": "2018-06-06T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 783.55,
+      "exit": 777.07,
+      "net_pnl": 61.29,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2018-06-13T00:00:00+00:00",
+      "exit_time": "2018-07-17T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 750.04,
+      "exit": 681.83,
+      "net_pnl": 678.54,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2018-08-15T00:00:00+00:00",
+      "exit_time": "2018-09-10T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 711.09,
+      "exit": 708.48,
+      "net_pnl": 22.63,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2018-09-26T00:00:00+00:00",
+      "exit_time": "2018-09-27T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 701.07,
+      "exit": 715.89,
+      "net_pnl": -151.66,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2018-10-03T00:00:00+00:00",
+      "exit_time": "2018-10-18T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 730.28,
+      "exit": 724.75,
+      "net_pnl": -58.74,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2018-10-30T00:00:00+00:00",
+      "exit_time": "2018-11-07T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 743.37,
+      "exit": 727.94,
+      "net_pnl": -157.72,
+      "reason": "stop"
+    },
+    {
+      "entry_time": "2018-11-14T00:00:00+00:00",
+      "exit_time": "2018-12-05T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 710.63,
+      "exit": 695.66,
+      "net_pnl": 146.19,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2018-12-19T00:00:00+00:00",
+      "exit_time": "2019-01-07T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 726.48,
+      "exit": 717.05,
+      "net_pnl": -97.76,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2019-01-09T00:00:00+00:00",
+      "exit_time": "2019-01-30T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 712.24,
+      "exit": 709.04,
+      "net_pnl": 28.48,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2019-02-05T00:00:00+00:00",
+      "exit_time": "2019-03-05T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 718.98,
+      "exit": 767.04,
+      "net_pnl": 477.09,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2019-03-06T00:00:00+00:00",
+      "exit_time": "2019-03-21T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 782.38,
+      "exit": 801.07,
+      "net_pnl": 183.42,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2019-04-08T00:00:00+00:00",
+      "exit_time": "2019-04-22T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 813.93,
+      "exit": 816.19,
+      "net_pnl": 19.1,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2019-05-02T00:00:00+00:00",
+      "exit_time": "2019-05-30T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 833.17,
+      "exit": 886.77,
+      "net_pnl": 532.48,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2019-07-05T00:00:00+00:00",
+      "exit_time": "2019-07-18T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 879.6,
+      "exit": 863.21,
+      "net_pnl": -167.36,
+      "reason": "stop"
+    },
+    {
+      "entry_time": "2019-07-23T00:00:00+00:00",
+      "exit_time": "2019-07-24T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 837.33,
+      "exit": 844.6,
+      "net_pnl": -76.18,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2019-07-25T00:00:00+00:00",
+      "exit_time": "2019-07-30T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 839.76,
+      "exit": 851.2,
+      "net_pnl": -117.94,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2019-08-02T00:00:00+00:00",
+      "exit_time": "2019-08-05T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 843.69,
+      "exit": 859.66,
+      "net_pnl": -163.17,
+      "reason": "stop"
+    },
+    {
+      "entry_time": "2019-08-05T00:00:00+00:00",
+      "exit_time": "2019-08-29T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 857.41,
+      "exit": 873.98,
+      "net_pnl": 162.29,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2019-09-05T00:00:00+00:00",
+      "exit_time": "2019-09-06T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 860.53,
+      "exit": 867.0,
+      "net_pnl": -68.17,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2019-09-09T00:00:00+00:00",
+      "exit_time": "2019-09-26T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 863.15,
+      "exit": 855.31,
+      "net_pnl": 74.92,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2019-09-30T00:00:00+00:00",
+      "exit_time": "2019-10-01T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 834.68,
+      "exit": 842.39,
+      "net_pnl": -80.54,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2019-10-04T00:00:00+00:00",
+      "exit_time": "2019-10-07T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 868.49,
+      "exit": 864.1,
+      "net_pnl": -47.4,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2019-10-10T00:00:00+00:00",
+      "exit_time": "2019-10-11T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 866.96,
+      "exit": 855.46,
+      "net_pnl": -118.53,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2019-10-15T00:00:00+00:00",
+      "exit_time": "2019-10-17T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 873.76,
+      "exit": 854.35,
+      "net_pnl": -197.57,
+      "reason": "stop"
+    },
+    {
+      "entry_time": "2019-10-22T00:00:00+00:00",
+      "exit_time": "2019-10-28T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 835.64,
+      "exit": 855.54,
+      "net_pnl": -202.44,
+      "reason": "stop"
+    },
+    {
+      "entry_time": "2019-10-28T00:00:00+00:00",
+      "exit_time": "2019-10-31T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 856.8,
+      "exit": 853.88,
+      "net_pnl": 25.78,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2019-11-01T00:00:00+00:00",
+      "exit_time": "2019-11-11T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 846.26,
+      "exit": 857.1,
+      "net_pnl": -111.92,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2019-11-12T00:00:00+00:00",
+      "exit_time": "2019-12-03T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 863.67,
+      "exit": 881.39,
+      "net_pnl": 173.77,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2019-12-06T00:00:00+00:00",
+      "exit_time": "2019-12-25T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 860.02,
+      "exit": 872.45,
+      "net_pnl": -127.79,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2019-12-25T00:00:00+00:00",
+      "exit_time": "2020-02-07T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 872.45,
+      "exit": 922.44,
+      "net_pnl": 496.46,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2020-02-12T00:00:00+00:00",
+      "exit_time": "2020-02-18T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 936.13,
+      "exit": 930.07,
+      "net_pnl": -64.05,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2020-03-10T00:00:00+00:00",
+      "exit_time": "2020-03-25T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 952.48,
+      "exit": 964.76,
+      "net_pnl": 119.34,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2020-04-03T00:00:00+00:00",
+      "exit_time": "2020-04-17T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 998.2,
+      "exit": 999.53,
+      "net_pnl": 9.85,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2020-05-19T00:00:00+00:00",
+      "exit_time": "2020-06-03T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 945.01,
+      "exit": 934.34,
+      "net_pnl": 103.17,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2020-06-05T00:00:00+00:00",
+      "exit_time": "2020-06-15T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 917.1,
+      "exit": 920.96,
+      "net_pnl": -42.08,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2020-07-10T00:00:00+00:00",
+      "exit_time": "2020-07-14T00:00:00+00:00",
+      "dir": "LONG",
+      "size": 1,
+      "entry": 954.25,
+      "exit": 951.63,
+      "net_pnl": -29.7,
+      "reason": "signal"
+    },
+    {
+      "entry_time": "2020-07-23T00:00:00+00:00",
+      "exit_time": "2020-08-07T00:00:00+00:00",
+      "dir": "SHORT",
+      "size": 1,
+      "entry": 925.6,
+      "exit": 937.72,
+      "net_pnl": -124.67,
+      "reason": "signal"
+    }
+  ]
+}
