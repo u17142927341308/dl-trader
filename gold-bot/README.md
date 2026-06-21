@@ -76,14 +76,14 @@ The project is built in phases (see the original brief, §11). Each phase is
 typed, tested, and committed before moving on.
 
 - [x] **Phase 1 — Scaffold, config, data adapter + caching, indicators + no-look-ahead tests**
-- [ ] Phase 2 — Strategy ABC + families (ema_cross, rsi_bollinger, donchian_breakout, macd_trend) + registry
+- [x] **Phase 2 — Strategy ABC + families (ema_cross, rsi_bollinger, donchian_breakout, macd_trend) + registry**
 - [ ] Phase 3 — Event-driven engine (trailing-DD, daily-loss, costs) + vectorbt fast runner; reconcile
 - [ ] Phase 4 — Metrics suite (Deflated Sharpe, Monte Carlo) with tests
 - [ ] Phase 5 — Walk-forward + optimizer + gating + orchestrator
 - [ ] Phase 6 — Risk manager wired into backtest + signal paths
 - [ ] Phase 7 — Signal generator + JSON exporters + schema
-- [ ] Phase 8 — Dashboard front-end
-- [ ] Phase 9 — GitHub Actions + Pages deployment
+- [~] Phase 8 — Dashboard front-end (shell live on Pages; rich views pending)
+- [~] Phase 9 — GitHub Actions + Pages deployment (Pages wired; compute workflows pending)
 - [ ] Phase 10 — Docs, final test pass, "extend to live Tradovate" note
 
 ## What Phase 1 delivers
@@ -98,9 +98,18 @@ gold-bot/
 │   │   ├── adapter.py          # DataAdapter ABC + normalize_ohlcv() contract
 │   │   ├── yfinance_adapter.py # free default source (GC=F), cache-backed
 │   │   └── cache.py            # parquet cache + hash integrity checks
-│   └── features/
-│       └── indicators.py       # SMA/EMA/RSI/ATR/Bollinger/MACD/Donchian, all causal
-└── tests/                      # 23 tests: no-look-ahead, cache integrity, config, economics
+│   ├── features/
+│   │   └── indicators.py       # SMA/EMA/RSI/ATR/Bollinger/MACD/Donchian, all causal
+│   └── strategies/
+│       ├── base.py             # Strategy ABC -> target-position {-1,0,1}, causal
+│       ├── ema_cross.py        # trend
+│       ├── rsi_bollinger.py    # mean reversion
+│       ├── donchian_breakout.py# breakout
+│       ├── macd_trend.py       # trend + regime filter
+│       └── registry.py         # auto-register families + search-space expansion
+├── docs/                       # gold-bot dashboard (GitHub Pages root)
+└── tests/                      # 39 tests: no-look-ahead (indicators + signals),
+                                # cache integrity, config, economics, registry/grids
 ```
 
 **Design highlights**
