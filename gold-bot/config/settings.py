@@ -57,9 +57,9 @@ class AccountRules(BaseModel):
     account_size: float = 50_000.0
     # End-of-day trailing max drawdown: ratchets up with new equity highs,
     # never moves down. Breaching it = account dead.
-    trailing_drawdown: float = 2_500.0
+    trailing_drawdown: float = 2_000.0
     # Hitting this intraday loss stops trading for the rest of the day.
-    daily_loss_limit: float = 1_250.0
+    daily_loss_limit: float = 1_000.0
     # Evaluation profit target.
     profit_target: float = 3_000.0
     # Max contracts (in MGC-equivalents) the funded plan permits.
@@ -91,8 +91,8 @@ class Settings(BaseSettings):
 
     # Flat overrides for the most-tweaked account numbers (env-friendly scalars).
     account_size: float = 50_000.0
-    trailing_drawdown: float = 2_500.0
-    daily_loss_limit: float = 1_250.0
+    trailing_drawdown: float = 2_000.0
+    daily_loss_limit: float = 1_000.0
     profit_target: float = 3_000.0
     max_contracts: int = 10
 

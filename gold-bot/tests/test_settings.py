@@ -10,8 +10,8 @@ def test_defaults_match_50k_plan() -> None:
     s = Settings()
     rules = s.account_rules
     assert rules.account_size == 50_000
-    assert rules.trailing_drawdown == 2_500
-    assert rules.daily_loss_limit == 1_250
+    assert rules.trailing_drawdown == 2_000
+    assert rules.daily_loss_limit == 1_000
     assert rules.profit_target == 3_000
     assert rules.max_contracts == 10
 

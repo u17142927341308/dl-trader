@@ -57,8 +57,8 @@ Defaults are placeholders for a typical 50K plan — **confirm with your provide
 | Parameter            | Default   | Meaning                                                        |
 |----------------------|-----------|----------------------------------------------------------------|
 | Account size         | 50,000 USD| Starting balance                                               |
-| Trailing max DD      | 2,500 USD | EOD trailing; ratchets up on new highs, never down; breach=dead|
-| Daily loss limit     | 1,250 USD | Hit it → trading stops for the day                             |
+| Trailing max DD      | 2,000 USD | EOD trailing; ratchets up on new highs, never down; breach=dead|
+| Daily loss limit     | 1,000 USD | Hit it → trading stops for the day                             |
 | Profit target (eval) | 3,000 USD | Evaluation pass threshold                                      |
 | Max contracts        | 10 MGC-eq | Funded-plan position cap                                       |
 
