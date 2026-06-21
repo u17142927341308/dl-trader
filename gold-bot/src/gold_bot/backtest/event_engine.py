@@ -80,6 +80,7 @@ class Trade:
 class BacktestResult:
     equity: pd.Series  # marked at each bar's close
     pnl: pd.Series  # per-bar change in equity ($)
+    position: pd.Series  # held direction per bar in {-1, 0, +1} (for exposure)
     trades: list[Trade] = field(default_factory=list)
     dd_dead: bool = False
     dd_breach_time: pd.Timestamp | None = None
@@ -188,6 +189,7 @@ def run_event_backtest(
     sim = _Sim(df, result, cfg)
     equity_out = np.empty(n, dtype=float)
     pnl_out = np.zeros(n, dtype=float)
+    pos_out = np.zeros(n, dtype=float)
 
     equity = sim.account
     prev_equity = sim.account
@@ -220,6 +222,9 @@ def run_event_backtest(
             if target != 0:
                 size = max(1, int(cfg.fixed_size))
                 sim.open_position(target, decision_price, size, sim.idx[i - 1] if i >= 1 else time, decision_atr)
+
+        # The bar's exposure is the position held into it (before any intrabar exit).
+        pos_out[i] = sim.side
 
         # Intrabar stop check (only meaningful from bar 1 onward).
         if i >= 1 and cfg.use_stops and sim.side != 0 and not dead and not np.isnan(sim.stop):
@@ -267,6 +272,7 @@ def run_event_backtest(
 
         if dead:
             equity_out[i + 1 :] = equity
+            pos_out[i + 1 :] = 0.0
             break
 
     # Close any still-open position at the final close (mark-to-market) so it is
@@ -281,6 +287,7 @@ def run_event_backtest(
     return BacktestResult(
         equity=pd.Series(equity_out, index=sim.idx, name="equity"),
         pnl=pd.Series(pnl_out, index=sim.idx, name="pnl"),
+        position=pd.Series(pos_out, index=sim.idx, name="position"),
         trades=sim.trades,
         dd_dead=dead,
         dd_breach_time=dead_time,

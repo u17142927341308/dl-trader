@@ -78,7 +78,7 @@ typed, tested, and committed before moving on.
 - [x] **Phase 1 — Scaffold, config, data adapter + caching, indicators + no-look-ahead tests**
 - [x] **Phase 2 — Strategy ABC + families (ema_cross, rsi_bollinger, donchian_breakout, macd_trend) + registry**
 - [x] **Phase 3 — Event-driven engine (trailing-DD, daily-loss, costs) + fast runner; reconciled**
-- [ ] Phase 4 — Metrics suite (Deflated Sharpe, Monte Carlo) with tests
+- [x] **Phase 4 — Metrics suite (Deflated Sharpe, Monte Carlo) with hand-checked tests**
 - [ ] Phase 5 — Walk-forward + optimizer + gating + orchestrator
 - [ ] Phase 6 — Risk manager wired into backtest + signal paths
 - [ ] Phase 7 — Signal generator + JSON exporters + schema
@@ -111,11 +111,13 @@ gold-bot/
 │   │   └── prop_rules.py       # TrailingDrawdown + DailyLossLimit (path-dependent)
 │   └── backtest/
 │       ├── event_engine.py     # bar-by-bar verifier: prop rules + costs + stops
-│       └── vectorbt_runner.py  # fast vectorised pass for the search (reconciled)
+│       ├── vectorbt_runner.py  # fast vectorised pass for the search (reconciled)
+│       └── metrics.py          # full suite + Deflated Sharpe + Monte-Carlo bust
 ├── docs/                       # gold-bot dashboard (GitHub Pages root)
-└── tests/                      # 53 tests: no-look-ahead (indicators + signals),
+└── tests/                      # 73 tests: no-look-ahead (indicators + signals),
                                 # cache integrity, config, registry/grids, prop-rule
-                                # edge cases, engine breaches, event/fast reconcile
+                                # edge cases, engine breaches, event/fast reconcile,
+                                # and every metric vs a hand-computed fixture
 ```
 
 **Design highlights**
