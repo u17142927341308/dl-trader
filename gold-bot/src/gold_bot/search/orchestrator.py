@@ -22,6 +22,7 @@ import pandas as pd
 
 from ..backtest.event_engine import BacktestResult, EventConfig, run_event_backtest
 from ..backtest.metrics import Metrics, compute_metrics, walk_forward_efficiency
+from ..risk.manager import DynamicRiskManager
 from ..strategies.base import make_strategy_id
 from ..strategies.registry import build
 from .gating import GateConfig, GateResult, evaluate_gate
@@ -160,12 +161,14 @@ def run_search(
         outcome.note = "best candidate failed the acceptance gate"
         return outcome
 
-    # Finalist passed -> touch the holdout exactly once.
+    # Finalist passed -> touch the holdout exactly once, using the dynamic risk
+    # manager (the same code path the live signal generator uses).
     strat = build(best.family, best.params).generate(holdout_df)
     cfg = event_cfg or EventConfig.from_settings()
     cfg = EventConfig(
         instrument=cfg.instrument, costs=cfg.costs, rules=cfg.rules,
         fixed_size=cfg.fixed_size, use_stops=True, enforce_prop=True,
+        risk_manager=DynamicRiskManager(rules=cfg.rules, instrument=cfg.instrument),
     )
     holdout_bt = run_event_backtest(holdout_df, strat, cfg)
     holdout_metrics = compute_metrics(holdout_bt, periods_per_year=periods_per_year)

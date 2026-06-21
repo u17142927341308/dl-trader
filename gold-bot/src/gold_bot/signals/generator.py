@@ -13,6 +13,7 @@ from datetime import UTC, datetime, timedelta
 import pandas as pd
 from config.settings import Settings, get_settings
 
+from ..risk.manager import DynamicRiskManager
 from ..strategies.base import make_strategy_id
 from ..strategies.registry import build
 from .schema import SignalArtifact
@@ -22,16 +23,6 @@ _TF_HOURS = {"1d": 24, "1h": 1, "1wk": 168}
 
 def _now_iso() -> str:
     return datetime.now(UTC).isoformat().replace("+00:00", "Z")
-
-
-def _size_for(risk_per_contract: float, settings: Settings) -> int:
-    """Risk-budgeted size: risk ~half the daily loss limit, capped by the plan."""
-    rules = settings.account_rules
-    if risk_per_contract <= 0:
-        return 0
-    budget = rules.daily_loss_limit * 0.5
-    n = int(math.floor(budget / risk_per_contract))
-    return max(1, min(rules.max_contracts, n)) if n >= 1 else 0
 
 
 def build_signal(
@@ -57,8 +48,24 @@ def build_signal(
             confidence_notes="No accepted strategy — search ongoing or none found.",
             auto_execution=False,
         )
+    return signal_from_params(
+        outcome.best.family, outcome.best.params, df, timeframe=timeframe, settings=s
+    )
 
-    strat = build(outcome.best.family, outcome.best.params).generate(df)
+
+def signal_from_params(
+    family: str,
+    params: dict,
+    df: pd.DataFrame,
+    timeframe: str = "1d",
+    settings: Settings | None = None,
+) -> SignalArtifact:
+    """Build a signal from a stored accepted strategy (used by the signals job)."""
+    s = settings or get_settings()
+    inst = s.instrument
+    headroom = s.account_rules.trailing_drawdown
+
+    strat = build(family, params).generate(df)
     direction = int(strat.signal.iloc[-1])
     atr = float(strat.atr.iloc[-1])
     entry = float(df["close"].iloc[-1])
@@ -72,7 +79,7 @@ def build_signal(
             signal="FLAT",
             entry=entry,
             account_headroom_to_trailing_dd=headroom,
-            strategy_id=make_strategy_id(outcome.best.family, outcome.best.params),
+            strategy_id=make_strategy_id(family, params),
             confidence_notes=f"Strategy flat at last bar. ATR={atr:.2f}.",
             auto_execution=False,
         )
@@ -81,7 +88,16 @@ def build_signal(
     stop = entry - direction * stop_dist
     take_profit = entry + direction * stop_dist * 2.0  # 2R target
     risk_per_contract = stop_dist * inst.point_value
-    size = _size_for(risk_per_contract, s)
+    # Same DynamicRiskManager the backtest uses (what you test is what you trade).
+    # At signal time we assume a fresh account (full trailing-DD headroom).
+    manager = DynamicRiskManager.from_settings(s)
+    size = manager.size(
+        atr,
+        strat.atr_stop_mult,
+        equity=s.account_rules.account_size,
+        headroom=s.account_rules.trailing_drawdown,
+        day_loss=0.0,
+    )
     valid_hours = _TF_HOURS.get(timeframe, 24)
 
     return SignalArtifact(
@@ -96,10 +112,10 @@ def build_signal(
         risk_dollars=round(size * risk_per_contract, 2),
         account_headroom_to_trailing_dd=headroom,
         confidence_notes=(
-            f"{outcome.best.family} fired {side}. ATR={atr:.2f}, "
+            f"{family} fired {side}. ATR={atr:.2f}, "
             f"stop={strat.atr_stop_mult:g}xATR, 2R target."
         ),
-        strategy_id=make_strategy_id(outcome.best.family, outcome.best.params),
+        strategy_id=make_strategy_id(family, params),
         valid_until=(datetime.now(UTC) + timedelta(hours=valid_hours))
         .isoformat()
         .replace("+00:00", "Z"),

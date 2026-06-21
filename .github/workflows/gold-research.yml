@@ -1,0 +1,63 @@
+name: gold-bot research
+
+# Full pipeline: refresh data -> search + walk-forward + gating -> holdout once
+# -> export validated docs/data/*.json. Scheduled weekly + manual dispatch.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '20 6 * * 1'   # Mondays 06:20 UTC
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gold-research
+  cancel-in-progress: false
+
+defaults:
+  run:
+    working-directory: gold-bot
+
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Cache parquet data
+        uses: actions/cache@v4
+        with:
+          path: gold-bot/.cache
+          key: gold-data-${{ github.run_id }}
+          restore-keys: gold-data-
+
+      - name: Install dependencies
+        run: pip install -r requirements-ci.txt
+
+      - name: Lint
+        run: ruff check .
+
+      - name: Tests
+        run: PYTHONPATH=src:. pytest -q
+
+      - name: Run research pipeline
+        run: PYTHONPATH=src:. python -m gold_bot.run_research --source yfinance --out docs/data
+
+      - name: Guard against leaked secrets in published data
+        run: |
+          if grep -rEi '(api[_-]?key|secret|token|password)["'"'"']?\s*[:=]\s*["'"'"']?[A-Za-z0-9_\-]{16,}' docs/; then
+            echo "Potential secret detected in docs/ — failing." >&2
+            exit 1
+          fi
+
+      - name: Commit artifacts
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/data
+          git commit -m "gold-bot: refresh research artifacts [skip ci]" || echo "nothing to commit"
+          git push

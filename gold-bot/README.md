@@ -80,10 +80,10 @@ typed, tested, and committed before moving on.
 - [x] **Phase 3 — Event-driven engine (trailing-DD, daily-loss, costs) + fast runner; reconciled**
 - [x] **Phase 4 — Metrics suite (Deflated Sharpe, Monte Carlo) with hand-checked tests**
 - [x] **Phase 5 — Walk-forward + optimizer + gating + orchestrator (the disciplined search)**
-- [ ] Phase 6 — Risk manager wired into backtest + signal paths
+- [x] **Phase 6 — DynamicRiskManager wired into BOTH the backtest and signal paths**
 - [x] **Phase 7 — Signal generator + JSON exporters + pydantic schema**
 - [~] Phase 8 — Dashboard front-end (live, fed by real artifacts; rich trade-log/plateau pending)
-- [~] Phase 9 — GitHub Actions + Pages deployment (Pages wired; compute workflows pending)
+- [x] **Phase 9 — GitHub Actions (research + signals) + Pages deployment**
 - [ ] Phase 10 — Docs, final test pass, "extend to live Tradovate" note
 
 ### See the dashboard now
@@ -123,7 +123,9 @@ gold-bot/
 │   │   ├── macd_trend.py       # trend + regime filter
 │   │   └── registry.py         # auto-register families + search-space expansion
 │   ├── risk/
-│   │   └── prop_rules.py       # TrailingDrawdown + DailyLossLimit (path-dependent)
+│   │   ├── prop_rules.py       # TrailingDrawdown + DailyLossLimit (path-dependent)
+│   │   ├── position_sizing.py  # ATR/vol-target sizing primitives
+│   │   └── manager.py          # DynamicRiskManager: sizing + DD circuit breaker
 │   ├── backtest/
 │   │   ├── event_engine.py     # bar-by-bar verifier: prop rules + costs + stops
 │   │   ├── vectorbt_runner.py  # fast vectorised pass for the search (reconciled)
@@ -138,9 +140,11 @@ gold-bot/
 │   │   └── generator.py        # accepted strategy + latest bars -> advisory signal
 │   ├── reporting/
 │   │   └── export.py           # write validated docs/data/*.json
-│   └── run_research.py         # data -> search -> gate -> export entry point
+│   ├── run_research.py         # data -> search -> gate -> export entry point
+│   └── run_signals.py          # lightweight, frequent signal refresh
+# (repo root) .github/workflows/ # gold-research.yml, gold-signals.yml, pages.yml
 ├── docs/                       # gold-bot dashboard (GitHub Pages root) + data/*.json
-└── tests/                      # 79 tests: no-look-ahead (indicators + signals),
+└── tests/                      # 86 tests: no-look-ahead (indicators + signals),
                                 # cache integrity, config, registry/grids, prop-rule
                                 # edge cases, engine breaches, event/fast reconcile,
                                 # every metric vs a hand-computed fixture, WFO windows,
