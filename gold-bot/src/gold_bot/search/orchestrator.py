@@ -87,6 +87,7 @@ def run_search(
     holdout_frac: float = 0.2,
     periods_per_year: int = 252,
     max_trials_per_family: int = 200,
+    verify_top_k: int = 10,
 ) -> SearchOutcome:
     wfo_cfg = wfo_cfg or WFOConfig()
     gate_cfg = gate_cfg or GateConfig()
@@ -111,39 +112,53 @@ def run_search(
         periods_per_year=periods_per_year,
     )
 
-    candidates = [t for t in ledger.trials if not t.dd_breached and t.score != float("-inf")]
+    ranked = sorted(
+        (t for t in ledger.trials if t.score != float("-inf")),
+        key=lambda t: t.score,
+        reverse=True,
+    )
     sr = (str(search_df.index[0].date()), str(search_df.index[-1].date()))
     hr = (str(holdout_df.index[0].date()), str(holdout_df.index[-1].date())) if holdout_n else ("", "")
 
-    if not candidates:
+    if not ranked:
         return SearchOutcome(
-            ledger=ledger,
-            accepted=False,
-            search_range=sr,
-            holdout_range=hr,
-            note="no non-busting candidate found",
+            ledger=ledger, accepted=False, search_range=sr, holdout_range=hr,
+            note="no scoreable candidate found",
         )
 
-    best = max(candidates, key=lambda t: t.score)
+    # Verify the top-K fast-ranked candidates with the EVENT engine (ATR stops +
+    # real DD accounting). Take the first that clears the full gate; otherwise
+    # keep the best non-busting one for honest display.
+    verified: list[tuple] = []
+    for t in ranked[: max(1, verify_top_k)]:
+        ev = evaluate_candidate(search_df, t.family, t.params, windows, event_cfg)
+        wfe = walk_forward_efficiency(t.is_return_pct, ev.oos.total_net / ev.oos.equity.iloc[0])
+        metrics = compute_metrics(
+            ev.oos,
+            periods_per_year=periods_per_year,
+            n_trials=ledger.n_trials,
+            trial_sharpe_std=ledger.trial_sharpe_std,
+            is_return=t.is_return_pct,
+        )
+        gate = evaluate_gate(
+            metrics,
+            n_trials=ledger.n_trials,
+            trial_sharpe_std=ledger.trial_sharpe_std,
+            walk_forward_efficiency=wfe,
+            periods_per_year=periods_per_year,
+            cfg=gate_cfg,
+        )
+        verified.append((t, ev, metrics, gate, wfe))
+        if gate.passed:
+            break
 
-    # Re-evaluate the best to get its OOS equity curve and a DSR-aware metric set.
-    ev = evaluate_candidate(search_df, best.family, best.params, windows, event_cfg)
-    wfe = walk_forward_efficiency(best.is_return_pct, ev.oos.total_net / ev.oos.equity.iloc[0])
-    best_metrics = compute_metrics(
-        ev.oos,
-        periods_per_year=periods_per_year,
-        n_trials=ledger.n_trials,
-        trial_sharpe_std=ledger.trial_sharpe_std,
-        is_return=best.is_return_pct,
+    passing = [v for v in verified if v[3].passed]
+    chosen = (
+        passing[0]
+        if passing
+        else max(verified, key=lambda v: (not v[2].dd_breached, v[2].sharpe))
     )
-    gate_result = evaluate_gate(
-        best_metrics,
-        n_trials=ledger.n_trials,
-        trial_sharpe_std=ledger.trial_sharpe_std,
-        walk_forward_efficiency=wfe,
-        periods_per_year=periods_per_year,
-        cfg=gate_cfg,
-    )
+    best, ev, best_metrics, gate_result, wfe = chosen
 
     outcome = SearchOutcome(
         ledger=ledger,

@@ -113,9 +113,9 @@ def _walkforward(outcome: object) -> WalkForwardArtifact:
             folds.append(
                 FoldSummary(
                     family=fam,
-                    oos_sharpe=round(t.oos_metrics.sharpe, 3),
-                    oos_profit_factor=round(t.oos_metrics.profit_factor, 3),
-                    n_trades=t.oos_metrics.n_trades,
+                    oos_sharpe=round(t.oos_sharpe, 3),
+                    oos_profit_factor=None,  # not computed in the fast ranking pass
+                    n_trades=t.n_trades,
                 )
             )
         ranked = sorted(ledger.trials, key=lambda x: x.score, reverse=True)[:10]
@@ -180,15 +180,22 @@ def _best_candidate(outcome: object) -> BestCandidateArtifact | None:
         return None
     gate = getattr(outcome, "gate_result", None)
     failures = gate.failures if gate is not None else []
+    # Prefer the event-engine full metrics for the finalist; fall back to the
+    # lightweight trial fields from the fast ranking pass.
+    m = getattr(outcome, "best_oos_metrics", None)
+    sharpe = round(m.sharpe, 3) if m else round(best.oos_sharpe, 3)
+    pf = round(m.profit_factor, 3) if m else None
+    ret = round(m.total_return_pct, 4) if m else round(best.oos_return_pct, 4)
+    n_trades = m.n_trades if m else best.n_trades
     return BestCandidateArtifact(
         strategy_id=make_strategy_id(best.family, best.params),
         family=best.family,
         params=best.params,
         accepted=bool(getattr(outcome, "accepted", False)),
-        oos_sharpe=round(best.oos_metrics.sharpe, 3),
-        oos_profit_factor=round(best.oos_metrics.profit_factor, 3),
-        oos_return_pct=round(best.oos_metrics.total_return_pct, 4),
-        n_trades=best.oos_metrics.n_trades,
+        oos_sharpe=sharpe,
+        oos_profit_factor=pf,
+        oos_return_pct=ret,
+        n_trades=n_trades,
         gate_failures=failures,
     )
 

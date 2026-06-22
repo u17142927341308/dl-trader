@@ -2,92 +2,92 @@
   "rows": [
     {
       "name": "Sharpe",
-      "oos": 5.4353,
+      "oos": -0.559,
       "holdout": null
     },
     {
       "name": "Sortino",
-      "oos": 8.1216,
+      "oos": -0.8062,
       "holdout": null
     },
     {
       "name": "Calmar",
-      "oos": 34.4312,
+      "oos": -0.1709,
       "holdout": null
     },
     {
       "name": "Total return %",
-      "oos": 0.0522,
+      "oos": -0.0847,
       "holdout": null
     },
     {
       "name": "CAGR",
-      "oos": 0.9632,
+      "oos": -0.0184,
       "holdout": null
     },
     {
       "name": "Profit factor",
-      "oos": 1.4985,
+      "oos": 0.9074,
       "holdout": null
     },
     {
       "name": "Win rate",
-      "oos": 0.6757,
+      "oos": 0.2406,
       "holdout": null
     },
     {
       "name": "Payoff ratio",
-      "oos": 0.7193,
+      "oos": 2.8648,
       "holdout": null
     },
     {
       "name": "Expectancy $",
-      "oos": 35.2971,
+      "oos": -1.9517,
       "holdout": null
     },
     {
       "name": "Max DD $",
-      "oos": 1494.2338,
+      "oos": 5447.2235,
       "holdout": null
     },
     {
       "name": "Max DD %",
-      "oos": 0.028,
+      "oos": 0.1076,
       "holdout": null
     },
     {
       "name": "Trailing-DD headroom $",
-      "oos": 505.7662,
+      "oos": -3447.2235,
       "holdout": null
     },
     {
       "name": "Worst daily loss $",
-      "oos": 930.1621,
+      "oos": 579.0257,
       "holdout": null
     },
     {
       "name": "Exposure",
-      "oos": 0.3977,
+      "oos": 1.0,
       "holdout": null
     },
     {
       "name": "# Trades",
-      "oos": 74,
+      "oos": 2170,
       "holdout": null
     },
     {
       "name": "Longest losing streak",
-      "oos": 4,
+      "oos": 18,
       "holdout": null
     },
     {
       "name": "Deflated Sharpe",
-      "oos": 0.0879,
+      "oos": 0.0,
       "holdout": null
     },
     {
       "name": "MC bust prob",
-      "oos": 0.087,
+      "oos": 0.9965,
       "holdout": null
     }
   ]
