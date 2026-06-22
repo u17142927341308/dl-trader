@@ -46,6 +46,16 @@ macd_trend:
     regime_ma: [50, 100]
     atr_stop_mult: [1.5, 2.5]
 
+opening_range:
+  description: "Opening-range breakout: flat most of the day, <=1 trade/session, flat overnight."
+  type: grid
+  params:
+    open_minute: [810, 870]      # 13:30 / 14:30 UTC session open
+    range_minutes: [30, 60]
+    end_minute: [1200, 1260]     # 20:00 / 21:00 UTC session close
+    atr_period: [14]
+    atr_stop_mult: [1.0, 1.5, 2.0]
+
 search:
   max_trials_per_family: 200
   optimizer: grid

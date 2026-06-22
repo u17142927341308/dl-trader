@@ -89,6 +89,7 @@ def _ensure_loaded() -> None:
         donchian_breakout,
         ema_cross,
         macd_trend,
+        opening_range,
         rsi_bollinger,
     )
 
