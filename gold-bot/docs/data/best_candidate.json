@@ -1,21 +1,23 @@
 {
-  "strategy_id": "rsi_bollinger__atr_stop_mult2.5_bb_period20_bb_std2.0_rsi_high75_rsi_low30_rsi_period7",
-  "family": "rsi_bollinger",
+  "strategy_id": "ema_cross__atr_period14_atr_stop_mult2.5_fast20_slow100",
+  "family": "ema_cross",
   "params": {
-    "rsi_period": 7,
-    "rsi_low": 30,
-    "rsi_high": 75,
-    "bb_period": 20,
-    "bb_std": 2.0,
+    "fast": 20,
+    "slow": 100,
+    "atr_period": 14,
     "atr_stop_mult": 2.5
   },
   "accepted": false,
-  "oos_sharpe": 5.435,
-  "oos_profit_factor": 1.498,
-  "oos_return_pct": 0.0522,
-  "n_trades": 74,
+  "oos_sharpe": -0.559,
+  "oos_profit_factor": 0.907,
+  "oos_return_pct": -0.0847,
+  "n_trades": 2170,
   "gate_failures": [
+    "oos_sharpe",
+    "profit_factor",
+    "walk_forward_efficiency",
     "deflated_sharpe",
-    "monte_carlo_survival"
+    "monte_carlo_survival",
+    "trailing_dd_survival"
   ]
 }

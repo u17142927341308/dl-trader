@@ -64,15 +64,18 @@ def load_data(source: str) -> tuple[pd.DataFrame, str]:
         return resample_ohlcv(synthetic_5m(), tf) if tf != "5min" else synthetic_5m(), "synthetic"
 
     if source == "auto":
-        order = ["local"] + (["alphavantage"] if s.alphavantage_api_key else [])
+        # Prefer the long XAUUSD history (years) for statistical power; fall back
+        # to the recent real MGC futures, then Alpha Vantage.
+        order = ["xau_ext", "mgc"] + (["alphavantage"] if s.alphavantage_api_key else [])
     else:
         order = [source]
 
     for src in order:
         try:
-            if src == "local":
-                df = load_local("mgc", tf)
-                label = f"local:MGC{tf}"
+            if src in ("xau_ext", "mgc", "local"):
+                sym = "mgc" if src in ("mgc", "local") else "xau_ext"
+                df = load_local(sym, tf)
+                label = f"local:{sym}:{tf}"
             elif src == "alphavantage":
                 df = _from_alphavantage(s)
                 label = f"alphavantage:{s.gold_proxy_symbol}x{s.gold_proxy_scale:g}"
@@ -100,7 +103,7 @@ def intraday_wfo(search_len: int) -> WFOConfig:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="gold-bot research pipeline")
     parser.add_argument(
-        "--source", choices=["auto", "local", "alphavantage", "synthetic"], default="auto"
+        "--source", choices=["auto", "xau_ext", "mgc", "local", "alphavantage", "synthetic"], default="auto"
     )
     parser.add_argument("--out", default="docs/data")
     parser.add_argument("--max-trials", type=int, default=200)
@@ -116,8 +119,8 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     search_len = int(len(df) * 0.8)
-    # Min-trades is adapted to the ~2-month intraday sample (more history -> raise it).
-    gate_cfg = GateConfig(min_trades=40)
+    # Full statistical rigour now that we have years of intraday history.
+    gate_cfg = GateConfig(min_trades=100)
     outcome = run_search(
         df,
         wfo_cfg=intraday_wfo(search_len),

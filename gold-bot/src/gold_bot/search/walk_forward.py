@@ -19,10 +19,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+import numpy as np
 import pandas as pd
 
 from ..backtest.event_engine import BacktestResult, EventConfig, run_event_backtest
 from ..backtest.metrics import trailing_dd_min_headroom
+from ..backtest.vectorbt_runner import run_fast_backtest
 from ..strategies.base import StrategyResult
 from ..strategies.registry import build
 
@@ -153,3 +155,60 @@ def evaluate_candidate(
     oos = _chain(df, strat, [w.test for w in windows], cfg, cfg.rules.trailing_drawdown)
     is_ = _chain(df, strat, [w.train for w in windows], cfg, cfg.rules.trailing_drawdown)
     return CandidateEval(family=family, params=params, oos=oos, is_=is_)
+
+
+@dataclass
+class FastEval:
+    """Lightweight walk-forward result from the vectorised runner (for ranking)."""
+
+    family: str
+    params: dict
+    oos_equity: pd.Series
+    oos_n_trades: int
+    is_return_pct: float
+    dd_breached: bool
+
+
+def _chain_fast(
+    df: pd.DataFrame, result: StrategyResult, slices: list[slice], cfg: EventConfig
+) -> tuple[pd.Series, int]:
+    """Chain the FAST vectorised runner across windows (no stops/prop rules)."""
+    account = cfg.rules.account_size
+    parts: list[pd.Series] = []
+    n_trades = 0
+    for sl in slices:
+        sub_df = df.iloc[sl]
+        if len(sub_df) < 2:
+            continue
+        sub_res = _slice_result(result, sl, df.index)
+        fr = run_fast_backtest(sub_df, sub_res, cfg.instrument, cfg.costs, size=1, start_equity=account)
+        seg = fr.equity.to_numpy(dtype=float)
+        parts.append(pd.Series(np.diff(seg, prepend=account), index=sub_df.index))
+        n_trades += fr.n_trades
+    if not parts:
+        return pd.Series([account], dtype=float), 0
+    pnl = pd.concat(parts)
+    return account + pnl.cumsum(), n_trades
+
+
+def evaluate_candidate_fast(
+    df: pd.DataFrame,
+    family: str,
+    params: dict,
+    windows: list[Window],
+    event_cfg: EventConfig | None = None,
+) -> FastEval:
+    """Fast OOS scoring for one candidate (used by the grid search to rank).
+
+    Uses the vectorised runner, so thousands of trials over years of intraday
+    bars stay cheap; the event-driven engine then verifies only the finalist.
+    """
+    cfg = event_cfg or EventConfig.from_settings()
+    strat = build(family, params).generate(df)
+    oos_eq, oos_n = _chain_fast(df, strat, [w.test for w in windows], cfg)
+    is_eq, _ = _chain_fast(df, strat, [w.train for w in windows], cfg)
+    is_ret = float(is_eq.iloc[-1] / is_eq.iloc[0] - 1.0) if len(is_eq) > 1 else 0.0
+    # NOTE: the fast runner has no stops, so its drawdown is not meaningful for
+    # the prop-firm DD check — that is verified by the event engine (with ATR
+    # stops) on the finalist. We do not veto on DD here.
+    return FastEval(family, params, oos_eq, oos_n, is_ret, dd_breached=False)
